@@ -76,7 +76,9 @@ export default function App() {
       ? 'conta'
       : query.has('portais')
         ? 'portais'
-        : null
+        : query.has('lendas')
+          ? 'lendas'
+          : null
   })
 
   const [grimorio, setGrimorio] = useState(
@@ -85,6 +87,7 @@ export default function App() {
 
   const [menuAberto, setMenuAberto] = useState(false)
   const [reduzir, setReduzir] = useState(movimentoInicial)
+  const [buscaLendas, setBuscaLendas] = useState('')
 
   const toqueInicial = useRef<number | null>(null)
   const toqueAnterior = useRef<number | null>(null)
@@ -281,7 +284,14 @@ export default function App() {
 
   const fase: FaseMundo =
     cena === 'entrada' ? 'entrada' : 'travessia'
-      return (
+  const termoLendas = buscaLendas.trim().toLocaleLowerCase('pt-BR')
+  const lendasVisiveis = lendas
+    .map((item, i) => ({ item, i }))
+    .filter(({ item }) =>
+      `${item.nome} ${item.origem}`.toLocaleLowerCase('pt-BR').includes(termoLendas),
+    )
+
+  return (
     <main
       className={`site cena-${cena}${
         demonstracao ? ' demonstracao-assombrada' : ''
@@ -406,6 +416,10 @@ export default function App() {
             Grimório
           </button>
 
+          <a href="/casa/cartas.html">
+            Cartas
+          </a>
+
           <button
             type="button"
             aria-current={painel === 'portais' ? 'page' : undefined}
@@ -419,7 +433,7 @@ export default function App() {
             aria-current={painel === 'conta' ? 'page' : undefined}
             onClick={() => abrirPainel('conta')}
           >
-            Conta
+            Minha conta
           </button>
 
           <a className="menu-ra" href={URL_RA}>
@@ -723,16 +737,44 @@ export default function App() {
               </button>
             </header>
 
+            <label className="indice-busca">
+              <span>Pesquisar por lenda ou origem</span>
+              <input
+                type="search"
+                value={buscaLendas}
+                onChange={(evento) => setBuscaLendas(evento.target.value)}
+                placeholder="Ex.: Loira do Banheiro, Japão"
+              />
+            </label>
+
+            <p className="indice-resultado" aria-live="polite">
+              {lendasVisiveis.length} de {lendas.length} registros
+            </p>
+
             <ol className="indice-lendas">
-              {lendas.map((item, i) => (
+              {lendasVisiveis.map(({ item, i }) => (
                 <li key={item.id}>
                   <button
                     type="button"
-                    onClick={() => atravessar(i)}
+                    onClick={() => abrirDossieDoRegistro(i)}
+                    aria-label={`Abrir dossiê de ${item.nome}, ${item.origem}`}
                   >
                     <span>{numero(i + 1)}</span>
-                    {item.imagem && <LegendImage id={item.id} src={item.imagem} alt={`Ilustração de ${item.nome}`} sizes="40px" style={{ width: 32, height: 40, objectFit: 'cover' }} />}
-                    {item.nome}
+                    {item.imagem ? (
+                      <LegendImage
+                        id={item.id}
+                        src={item.imagem}
+                        alt={`Ilustração de ${item.nome}`}
+                        sizes="40px"
+                        style={{ width: 32, height: 40, objectFit: 'contain' }}
+                      />
+                    ) : (
+                      <span className="indice-sem-imagem" aria-hidden="true">◈</span>
+                    )}
+                    <span className="indice-lenda-detalhe">
+                      <strong>{item.nome}</strong>
+                      <small>{item.origem}</small>
+                    </span>
                   </button>
                 </li>
               ))}

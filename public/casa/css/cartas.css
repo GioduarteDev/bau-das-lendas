@@ -42,6 +42,8 @@ h1 { margin: 12px 0 0; font: 400 clamp(40px, 5vw, 68px)/1 var(--serif); }
 .dica { margin: 14px 0 0; max-width: 560px; font-size: 17px; line-height: 1.5; color: var(--fumaca); }
 .dica b { font-weight: 400; color: var(--osso); }
 .filtros { display: flex; flex-wrap: wrap; gap: 10px; }
+.busca-cartas { display: grid; flex: 1 1 100%; gap: 7px; color: var(--fumaca); font: 10px var(--mono); letter-spacing: .12em; }
+.busca-cartas input { min-height: 44px; width: min(100%, 440px); padding: 8px 12px; border: 1px solid var(--linha-2); border-radius: 0; background: #100e0c; color: var(--osso); font: 16px var(--texto); letter-spacing: 0; }
 .filtro { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; cursor: pointer; background: none;
   border: 1px solid var(--linha-2); font: 11px var(--mono); letter-spacing: .18em; color: #cbc2b2; }
 .filtro:hover, .filtro.ativo { border-color: var(--ambar); color: var(--osso); }
@@ -171,7 +173,12 @@ h1 { margin: 12px 0 0; font: 400 clamp(40px, 5vw, 68px)/1 var(--serif); }
 .revelar-fechar:hover { background: var(--ambar); color: var(--breu); }
 
 @media (max-width: 640px) {
-  .topo nav a:not(.nav-ra) { display: none; }
+  .topo { height: auto; min-height: 76px; padding-block: 12px; flex-wrap: wrap; }
+  .topo nav { width: 100%; min-width: 0; gap: 16px; overflow-x: auto; overflow-y: hidden; padding-bottom: 6px; scrollbar-width: thin; }
+  .topo nav a { flex: 0 0 auto; white-space: nowrap; font-size: 9px; }
+  .topo nav .nav-ra { padding: 6px 8px; }
+  .filtros { width: 100%; }
+  .busca-cartas { flex: 1 1 100%; }
   .mesa { gap: 36px 16px; }
 }
 @media (prefers-reduced-motion: reduce) {

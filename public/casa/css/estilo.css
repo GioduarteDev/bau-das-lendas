@@ -268,12 +268,17 @@ body.hora-morta #rodape-cam::after { content: ' · SINAL INSTÁVEL'; color: var(
 /* ---------- RESPONSIVO ---------- */
 @media (max-width: 900px) {
   #planta { display: none; }
-  #topo nav a:not(.nav-ra) { display: none; }
+  #topo nav { flex: 1; min-width: 0; max-width: calc(100vw - 210px); gap: 12px; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
+  #topo nav a { flex: 0 0 auto; white-space: nowrap; font-size: 9px; }
+  #topo nav .nav-ra { padding: 6px 8px; }
   #dica { display: none; }
   #ficha { bottom: 76px; }
   .carimbo { right: 0; }
 }
 @media (max-width: 560px) {
+  #topo { gap: 10px; }
+  #marca { font-size: 19px; }
+  #topo nav { max-width: calc(100vw - 180px); }
   #rodape-hora, #rodape-cam { display: none; }
   #limiar-texto { top: auto; bottom: 120px; transform: none; }
   #limiar::before { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(11,10,9,.96) 50%, rgba(11,10,9,.35)); }

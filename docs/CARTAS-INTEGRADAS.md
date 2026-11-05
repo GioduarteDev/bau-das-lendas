@@ -13,6 +13,9 @@ Integração realizada na pasta oficial. **Oito cartas integram a coleção Post
 - Clicar numa carta lacrada não a concede. O dossiê encaminha para o baú em RA; cartas já coletadas encaminham ao Grimório oficial.
 - Flip compartilhado entre galeria, dossiê da casa e inspeção no Grimório: frente → verso → frente; clique, toque, Enter e Espaço; nome acessível, estado pressionado, foco visível e movimento reduzido. Os versos SVG foram reaproveitados dos desenhos originais, com a curva de rotação, inclinação, brilho e som de virada.
 - A ficha na galeria apresenta origem, ameaça, encontro e história oficiais. Os antigos XP, raridades, danos e números paralelos do protótipo não são usados como dados oficiais.
+- A galeria pública apresenta as 60 posições oficiais, incluindo placeholder nomeado nas 52 cartas sem arte; as oito ilustrações oficiais e o Saci extra permanecem associados somente aos próprios IDs. Pré-visualizar ou virar uma carta não concede progresso.
+- O catálogo pode pesquisar por nome e origem. Se a API pública do catálogo estiver indisponível, a galeria usa `public/lendas-ra.json`; o estado pessoal continua dependendo da API autenticada.
+- React, casa e cartas agora compartilham atalhos para Explorar, Lendas, Grimório, Cartas, Portais, Minha Conta e RA. A navegação também permanece disponível em telas pequenas.
 - O Grimório mantém seus controles de história e terceira face. A ilustração da primeira face recebe também o flip frente/verso.
 - Imagem ausente apresenta fallback. Ampliação tem fechamento acessível, contenção de foco e limite de tamanho, inclusive em paisagem.
 - Jardim, fachada, câmera, cálculos do scroll, saída pelo scroll, portas, aparições e easter eggs foram preservados. Corrigiu-se também `Bau is not defined` na inicialização de `config.js`.
@@ -105,12 +108,13 @@ Se o banco estiver indisponível ou apontar para outra instância, o script ence
 
 ## Apresentar as cartas
 
-1. Acesse `http://localhost:5175/?conta=1` e entre com os dados exibidos no terminal.
-2. Abra `http://localhost:5175/?album=1`. O Grimório mostra oito posições descobertas. Avance as folhas e abra uma carta. Clique na ilustração ou use Enter/Espaço para virar; os controles do Grimório continuam disponíveis para a história e a terceira face.
-3. Abra `http://localhost:5175/casa/cartas.html`. As oito oficiais estão desbloqueadas e o Saci aparece identificado como exposição. Use AMPLIAR para ver uma carta maior; a ficha da lenda pode ser expandida abaixo da carta.
-4. Para abrir diretamente o extra: `http://localhost:5175/casa/cartas.html?carta=saci-perere`.
-5. Abra `http://localhost:5175/casa/index.html`. Role atravessando o jardim e a porta. As cartas descobertas aparecem ilustradas nas paredes; use as setas/Próxima lenda e ABRIR DOSSIÊ, ou clique na carta. No dossiê, clique/toque na ilustração para virar. O Saci é uma peça extra de exposição perto da entrada.
-6. Feche o dossiê e role para trás para sair da casa. Atualize a página ou saia e entre novamente: a coleção permanece no PostgreSQL.
+1. A navegação principal está disponível no menu React, no cabeçalho da casa e na página de cartas. Em celular, os links do cabeçalho podem ser percorridos horizontalmente.
+2. Acesse `http://localhost:5175/?conta=1` e entre com os dados exibidos no terminal.
+3. Abra `http://localhost:5175/?album=1`. O Grimório mostra oito posições descobertas. Avance as folhas e abra uma carta. Clique na ilustração ou use Enter/Espaço para virar; os controles do Grimório continuam disponíveis para a história e a terceira face.
+4. Abra `http://localhost:5175/casa/cartas.html`. A galeria mostra as 60 cartas públicas (incluindo placeholders) e o Saci separado como exposição. Pesquise por nome/origem, vire uma prévia ou use AMPLIAR; nenhuma dessas ações desbloqueia a coleção. As cartas conquistadas continuam identificadas como salvas na conta.
+5. Para abrir diretamente o extra: `http://localhost:5175/casa/cartas.html?carta=saci-perere`.
+6. Abra `http://localhost:5175/casa/index.html`. Role atravessando o jardim e a porta. As cartas descobertas aparecem ilustradas nas paredes; use as setas/Próxima lenda e ABRIR DOSSIÊ, ou clique na carta. No dossiê, clique/toque na ilustração para virar. O Saci é uma peça extra de exposição perto da entrada.
+7. Feche o dossiê e role para trás para sair da casa. Atualize a página ou saia e entre novamente: a coleção permanece no PostgreSQL.
 
 ## Testes e resultados reais
 
@@ -118,7 +122,7 @@ Se o banco estiver indisponível ou apontar para outra instância, o script ence
 | --- | --- | --- |
 | APROVADO | Python + PostgreSQL real | **34 passaram; 2 ignorados** somente na variante SQLite dos testes de concorrência. Guardas da demonstração, concessão repetível, isolamento e sorteio após a concessão estão cobertos. |
 | APROVADO | Node focado em coleção, imagens, API/RA, QR e rastreador | **14 passaram**. IDs, hashes das fontes, oito vínculos oficiais, exclusão de Saci e descarte de respostas de outra conta verificados. |
-| APROVADO | `tests/cards-official-browser.mjs` | Desktop e celular emulado: login da conta real, nove imagens, oito oficiais, Saci separado, frente/verso, toque/teclado, movimento reduzido, ampliação em paisagem, reload, Grimório, dossiê, entrada/saída pelo scroll e isolamento. LocalStorage forjado não concedeu cartas. |
+| APROVADO | `tests/cards-official-browser.mjs` | Desktop e celular emulado: login da conta real, navegação React/casa/cartas, catálogo de 60 posições, 52 placeholders, nove imagens, prévia sem desbloqueio, Saci separado, frente/verso, toque/teclado, movimento reduzido, ampliação em paisagem, reload, Grimório, dossiê, entrada/saída pelo scroll e isolamento. LocalStorage forjado não concedeu cartas. |
 | APROVADO | `tests/integration-browser.mjs` | Fluxo de cadastro, sessão, QR, baú, sorteio, três faces, álbum, logout e novo login; desktop/celular emulado. API e banco reais; câmera sintética. |
 | APROVADO | `tests/assets-browser.mjs` | 60 sorteios sem repetição em conta de teste separada, novas artes no catálogo/Grimório/RA, recuperação do sorteio real da Loira por sua chave, fallback de JPG ausente e link de login. |
 | APROVADO | `tests/backend-http-smoke.mjs` | HTTP real, proxy, assets, health, autenticação, coleção e idempotência. |
@@ -149,13 +153,13 @@ Os testes de navegador exigem a conta de demonstração preparada e Chrome insta
 ## Arquivos modificados/criados nesta integração
 
 - Backend: `backend/app/core/config.py`, `backend/demo_account.py`, `backend/tests/test_demo.py`.
-- React: `src/Album.tsx`, `src/Conta.tsx`, `src/LegendImage.tsx`, `src/IllustratedCard.tsx`, `src/data/lendas.ts` gerado.
+- React: `src/App.tsx`, `src/style.css`, `src/Album.tsx`, `src/Conta.tsx`, `src/LegendImage.tsx`, `src/IllustratedCard.tsx`, `src/data/lendas.ts` gerado.
 - Dados compartilhados: `public/card-art.js`, `public/lendas-ra.json` somente caminhos de imagens, `public/legend-images.js`, `public/lendas/manifest.json`.
-- Casa: `public/casa/index.html`, `cartas.html`, `js/config.js`, `js/main.js`, `js/corredor.js`, `js/cartas.js`, `js/cartas-flip.js`, novos `js/colecao.js`, `js/house-catalog.js`, `js/card-view.js`, `css/cartas.css`, `css/card-view.css` e os dois versos `img/verso-{boitata,vitral}.svg` extraídos dos originais.
+- Casa: `public/casa/index.html`, `cartas.html`, `js/config.js`, `js/main.js`, `js/corredor.js`, `js/cartas.js`, `js/cartas-flip.js`, `js/colecao.js`, `js/house-catalog.js`, `js/card-view.js`, `css/estilo.css` (somente navegação responsiva), `css/cartas.css`, `css/card-view.css` e os dois versos `img/verso-{boitata,vitral}.svg` extraídos dos originais.
 - RA: `public/ra.html`, somente `object-fit:contain` da imagem.
 - Sincronização: `package.json`, `scripts/sincronizar-imagens.mjs`, `scripts/preparar-imagens.py` agora encaminha ao sincronizador sem recortar as cartas.
-- Testes: `tests/images.test.mjs`, `tests/collection.test.mjs`, `tests/assets-browser.mjs`, `tests/cards-official-browser.mjs`.
+- Testes: `tests/images.test.mjs`, `tests/collection.test.mjs`, `tests/assets-browser.mjs`, `tests/cards-official-browser.mjs` (catálogo público, prévia sem desbloqueio e rotas de navegação).
 - Documentação/exclusões: `.gitignore`, `.dockerignore`, `docs/IMAGENS.md`, este relatório e links nos relatórios anteriores/README.
 - Servidor de desenvolvimento: `vite.config.ts`, bloqueio HTTP dos arquivos privados do backend, mantendo os padrões de exclusão originais do Vite e o proxy da API.
 
-Nenhuma alteração foi feita em `public/casa/css/estilo.css`, `jardim.js`, `aparicoes.js`, `decor.js`, `som.js`, `easter-eggs.js` ou no serviço de sorteios. Os JPG fornecidos e as artes anteriores foram preservados. O catálogo local de decoração em `lendas.js` continua disponível; o adaptador aplica os 60 dados oficiais em tempo de execução.
+Esta atualização não alterou a fachada, o jardim, o movimento, as aparições, os efeitos ou o serviço de sorteios. `public/casa/css/estilo.css` recebeu somente regras para manter os destinos da navegação acessíveis em telas pequenas. Os JPG fornecidos e as artes anteriores foram preservados. O catálogo local de decoração em `lendas.js` continua disponível; o adaptador aplica os 60 dados oficiais em tempo de execução.

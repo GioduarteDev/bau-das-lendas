@@ -17,13 +17,15 @@ function flipSound() {
   } catch { /* A carta continua funcionando sem áudio disponível. */ }
 }
 
-export function mountCard(legend, { unlocked = false, extra = false } = {}) {
+export function mountCard(legend, { unlocked = false, extra = false, preview = false } = {}) {
   const el = document.createElement('article')
   el.className = 'carta-x'
   el.dataset.legendId = legend.id
   el.dataset.costas = cardBack(legend.id)
   el.dataset.unlocked = String(unlocked)
-  const allowed = unlocked || extra
+  el.dataset.preview = String(preview)
+  const allowed = unlocked || extra || preview
+  const revealed = unlocked || extra || preview
   el.innerHTML = '<div class="cx-inclina"><div class="cx-virador"><div class="cx-lado cx-frente"><div class="face face-arte"></div></div><div class="cx-lado cx-verso"><div class="face face-costas"></div></div></div></div><div class="cx-legenda"><span class="cx-nome"></span><span class="cx-face"></span></div>'
   const front = el.querySelector('.cx-frente'), back = el.querySelector('.cx-verso')
   const label = el.querySelector('.cx-face')
@@ -34,8 +36,14 @@ export function mountCard(legend, { unlocked = false, extra = false } = {}) {
     el.dataset.face = rear ? 'verso' : 'frente'
     el.querySelector('.cx-virador').style.transform = `rotateY(${turns * 180}deg)`
     front.setAttribute('aria-hidden', String(rear)); back.setAttribute('aria-hidden', String(!rear))
-    label.textContent = extra ? `EXPOSIÇÃO · ${rear ? 'VERSO' : 'FRENTE'}` : allowed ? `${rear ? 'VERSO' : 'FRENTE'} · ${String(legend.numero).padStart(3, '0')}/060` : 'LACRADA'
-    el.setAttribute('aria-label', `${legend.nome}. ${allowed ? `Mostrando ${rear ? 'verso' : 'frente'}. Ative para virar.` : 'Carta ainda não descoberta.'}`)
+    label.textContent = extra
+      ? `EXPOSIÇÃO · ${rear ? 'VERSO' : 'FRENTE'}`
+      : unlocked
+        ? `${rear ? 'VERSO' : 'FRENTE'} · ${String(legend.numero).padStart(3, '0')}/060`
+        : preview
+          ? `PRÉVIA PÚBLICA · ${rear ? 'VERSO' : 'FRENTE'}`
+          : 'LACRADA'
+    el.setAttribute('aria-label', `${legend.nome}. ${revealed ? `Mostrando ${rear ? 'verso' : 'frente'}. Ative para virar.` : 'Carta ainda não descoberta.'}`)
     if (allowed) el.setAttribute('aria-pressed', String(rear))
   }
   function image(path, alt, parent) {
@@ -48,10 +56,10 @@ export function mountCard(legend, { unlocked = false, extra = false } = {}) {
     }, { once: true })
     parent.append(img)
   }
-  if (allowed && legend.imagem) image(legend.imagem, `Carta ilustrada de ${legend.nome}`, el.querySelector('.face-arte'))
+  if (revealed && legend.imagem) image(legend.imagem, `Carta ilustrada de ${legend.nome}`, el.querySelector('.face-arte'))
   else {
     const text = document.createElement('span'); text.className = 'cx-ausente'
-    text.textContent = allowed ? 'Arte ainda não fornecida' : '◈ Carta lacrada'
+    text.textContent = revealed ? 'Arte ainda não fornecida' : '◈ Carta lacrada'
     el.querySelector('.face-arte').append(text)
   }
   image(`/casa/img/verso-${cardBack(legend.id)}.svg`, `Verso de ${legend.nome}`, el.querySelector('.face-costas'))

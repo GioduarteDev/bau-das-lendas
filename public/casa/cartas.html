@@ -16,8 +16,12 @@
   <header class="topo">
     <a href="./" class="marca">Baú das Lendas</a>
     <nav aria-label="Principal">
-      <a href="./">Corredor</a>
+      <a href="./">Explorar</a>
+      <a href="/?lendas=1">Lendas</a>
+      <a href="/?album=1">Grimório</a>
       <a href="#" class="ativo" aria-current="page">Cartas</a>
+      <a href="/?portais=1">Portais</a>
+      <a href="/?conta=1&retorno=cartas">Minha conta</a>
       <a href="/ra.html" class="nav-ra">Invocar em RA</a>
     </nav>
   </header>
@@ -32,6 +36,10 @@
         <p><a href="/?conta=1&retorno=cartas">Conta</a> · <a href="/?album=1">Grimório oficial</a> · <button type="button" id="refresh-collection" class="filtro">ATUALIZAR COLEÇÃO</button></p>
       </div>
       <div class="filtros" role="group" aria-label="Filtrar cartas">
+        <label class="busca-cartas">
+          <span>Pesquisar lenda ou origem</span>
+          <input id="busca-cartas" type="search" placeholder="Nome, país ou origem" autocomplete="off">
+        </label>
         <button type="button" class="filtro ativo" data-filtro="todas" aria-pressed="true">TODAS</button>
         <button type="button" class="filtro" data-filtro="boitata" aria-pressed="false"><i class="ponto rosa"></i>ENTIDADES</button>
         <button type="button" class="filtro" data-filtro="vitral" aria-pressed="false"><i class="ponto ouro"></i>LUGARES MALDITOS</button>

@@ -513,7 +513,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--osso); outline-
   width: 100%;
   display: flex;
   gap: 14px;
-  align-items: baseline;
+  align-items: center;
   padding: 12px 0;
   background: none;
   border: 0;
@@ -525,6 +525,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--osso); outline-
 
 .indice-lendas button span { font: 400 9px var(--interface); letter-spacing: 0.12em; color: #ac7b7a; }
 .indice-lendas button:hover { color: var(--osso); padding-left: 8px; }
+.indice-busca { display: grid; gap: 8px; margin: 0 0 12px; color: var(--texto-suave); font: 400 10px var(--interface); letter-spacing: .12em; text-transform: uppercase; }
+.indice-busca input { width: min(100%, 520px); min-height: 48px; padding: 10px 14px; border: 1px solid #4b4540; border-radius: 0; background: #08090a; color: var(--osso); font: 400 17px var(--serifa); }
+.indice-resultado { margin: 0 0 18px; color: var(--texto-sutil); font: 10px var(--interface); letter-spacing: .12em; }
+.indice-lendas button .indice-sem-imagem { width: 32px; height: 40px; display: grid; place-items: center; border: 1px solid #4b4540; color: #ac7b7a; font-size: 15px; }
+.indice-lendas button .indice-lenda-detalhe { min-width: 0; display: grid; gap: 4px; color: inherit; letter-spacing: 0; }
+.indice-lendas button .indice-lenda-detalhe strong { font: 400 22px/1.1 var(--serifa); }
+.indice-lendas button .indice-lenda-detalhe small { color: var(--texto-sutil); font: 400 11px/1.35 var(--interface); letter-spacing: 0; }
 
 .conta-texto { font: 400 22px / 1.55 var(--serifa); color: #b8b2a5; }
 
