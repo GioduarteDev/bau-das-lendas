@@ -1,0 +1,48 @@
+﻿{
+  "database": "postgresql",
+  "version": "18.3",
+  "migration": "0001",
+  "counts": {
+    "legends": 60,
+    "users": 11,
+    "user_cards": 244,
+    "draw_requests": 244,
+    "auth_sessions": 9
+  },
+  "legend_ids": 60,
+  "legend_numbers": {
+    "min": 1,
+    "max": 60,
+    "count": 60
+  },
+  "tables": [
+    "alembic_version",
+    "users",
+    "user_cards",
+    "legends",
+    "draw_requests",
+    "auth_sessions"
+  ],
+  "constraints": {
+    "users": {
+      "foreign_keys": 0,
+      "unique": 1
+    },
+    "legends": {
+      "foreign_keys": 0,
+      "unique": 1
+    },
+    "user_cards": {
+      "foreign_keys": 2,
+      "unique": 1
+    },
+    "draw_requests": {
+      "foreign_keys": 2,
+      "unique": 1
+    },
+    "auth_sessions": {
+      "foreign_keys": 1,
+      "unique": 0
+    }
+  }
+}

@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: bau
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no ambiente}
+      POSTGRES_DB: bau
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - bau_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bau -d bau"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  api:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    environment:
+      DATABASE_URL: postgresql+psycopg://bau:${POSTGRES_PASSWORD}@db:5432/bau
+      JWT_SECRET: ${JWT_SECRET:?Defina JWT_SECRET no ambiente}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      ALLOWED_ORIGINS: '${ALLOWED_ORIGINS:-["http://localhost:5175","http://127.0.0.1:5175"]}'
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["sh", "-c", "alembic upgrade head && python -m app.services.catalog && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+volumes:
+  bau_data:

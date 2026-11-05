@@ -1,0 +1,30 @@
+{
+  "name": "bau-ra-teste",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "predev": "node scripts/sincronizar-imagens.mjs && node scripts/sincronizar-catalogo.mjs && node scripts/preparar-leitor-qr.mjs",
+    "prebuild": "node scripts/sincronizar-imagens.mjs && node scripts/sincronizar-catalogo.mjs && node scripts/preparar-leitor-qr.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.160.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.0"
+  },
+  "dependencies": {
+    "@gullabs/react-flipbook": "^3.2.2",
+    "jsqr": "^1.4.0",
+    "qrcode.react": "^4.2.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "three": "^0.160.0"
+  }
+}

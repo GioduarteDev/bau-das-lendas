@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#08090b" />
+  <title>Baú das Lendas | Ritual de Descoberta em RA</title>
+  <!-- Bibliotecas mantidas nas mesmas versões do protótipo que você já usou. -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/vendor/three.module.js"
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+    :root { color-scheme:dark; font-family:'DM Sans',system-ui,sans-serif; color:#e8dfd8; background:#08090b; }
+    * { box-sizing:border-box; }
+    html,body { width:100%;height:100%;margin:0;overflow:hidden; }
+    button,a { -webkit-tap-highlight-color:transparent; }
+    #ar { position:fixed;inset:0; width:100vw;height:100dvh;overflow:hidden; }
+    #ar canvas { display:block; }
+    #ar canvas { position:absolute;inset:0; }
+    .ritual-camera { position:absolute;inset:0;width:100%;height:100%;object-fit:cover; }
+    #hud { position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none;padding:max(22px,env(safe-area-inset-top)) 20px max(26px,env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(4,5,8,.89),transparent 32%,transparent 61%,rgba(4,5,8,.93)); }
+    .row { display:flex;justify-content:space-between;align-items:center;gap:14px; }
+    .eyebrow { color:#bf9995;letter-spacing:.22em;text-transform:uppercase;font-size:10px;font-weight:700; }
+    h1 { font:600 clamp(34px,7vw,54px)/.95 'Cormorant Garamond',Georgia,serif;margin:15px 0 5px; }
+    #status { max-width:390px;color:#d5ccca;font-size:13px;line-height:1.5;margin:12px 0; }
+    #status a { pointer-events:auto; }
+    #progress { font-size:11px;letter-spacing:.12em;color:#d7aca7;text-transform:uppercase; }
+    #home { color:#d2c3c0;text-decoration:none;font-size:11px;letter-spacing:.14em;pointer-events:auto;white-space:nowrap; }
+    .bottom { display:flex;align-items:center;flex-direction:column;gap:10px;text-align:center; }
+    .action { cursor:pointer;pointer-events:auto;display:inline-flex;align-items:center;justify-content:center;max-width:min(100%,380px);width:100%;min-height:51px;border-radius:5px;padding:13px 16px;color:#f1e8e6;border:1px solid #a45b61;background:linear-gradient(135deg,#5f262e,#3b151d);letter-spacing:.14em;text-transform:uppercase;font:700 11px 'DM Sans',sans-serif;transition:filter .2s,transform .2s; }
+    .action:active { transform:scale(.98); }
+    .action:disabled { cursor:wait;opacity:.5; }
+    .action.secondary { color:#e5d7d1;background:rgba(12,13,17,.94);border-color:#655557; }
+    [hidden] { display:none!important; }
+    #hint { color:#9e9292;font-size:11px;max-width:345px;line-height:1.4;margin:3px 0; }
+    #rewardOverlay { position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(55,14,20,.78),rgba(3,4,7,.96) 78%);padding:calc(14px + env(safe-area-inset-top)) 14px calc(12px + env(safe-area-inset-bottom)); }
+    #rewardOverlay:before { content:'';position:absolute;inset:0;pointer-events:none;opacity:.22;background:repeating-linear-gradient(90deg,transparent 0,transparent 3px,rgba(255,255,255,.025) 4px,transparent 5px); }
+    .reward-layout { position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;width:min(100%,390px);max-height:100%; }
+    .reward-heading { text-align:center;flex:none; }
+    .reward-heading .eyebrow { color:#c7a6a3; }
+    .reward-heading h2 { margin:4px 0 0;font:600 clamp(28px,7vw,37px)/1 'Cormorant Garamond',Georgia,serif; }
+    #cardStage { --card-width:min(72vw,275px,32dvh * .73);position:relative; width:min(72vw,275px,calc(49dvh * .72)); height:min(100vw,380px,49dvh);max-height:380px;perspective:1200px;flex-shrink:1; }
+    #cardRotor { position:absolute;inset:0;transform-style:preserve-3d;transition:transform .78s cubic-bezier(.2,.8,.2,1); }
+    .cardFace { position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:2px solid #a16b69;border-radius:10px;background:radial-gradient(ellipse at 50% 20%,#272028,#101016 57%,#08090c);box-shadow:0 0 0 5px #161114,0 0 0 6px #654748,0 18px 56px #000b,inset 0 0 60px #0b080a; }
+    #faceB { transform:rotateY(180deg); }
+    .faceContent { width:100%;height:100%;padding:15px;display:flex;flex-direction:column;text-align:center;gap:9px; }
+    .cardTop { text-transform:uppercase;letter-spacing:.14em;font-size:9px;color:#b79c96;display:flex;justify-content:space-between;gap:6px; }
+    .cardArtwork { display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:0;flex:1;border:1px solid #574247;background:radial-gradient(circle at center,#452d37,#151117 72%);position:relative; }
+    .cardArtwork:before,.cardArtwork:after { content:'';position:absolute;border:1px solid rgba(207,145,139,.3);width:67%;aspect-ratio:1;border-radius:50%; }
+    .cardArtwork:after {width:47%;}
+    .cardArtwork img { position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:saturate(.42) contrast(1.08) brightness(.7); }
+    .placeholderSymbol { color:#ae7773;font:600 clamp(60px,20vw,100px)/1 'Cormorant Garamond',serif;z-index:1;text-shadow:0 0 24px rgba(211,46,66,.42); }
+    .cardName { font:600 clamp(21px,6vw,33px)/.93 'Cormorant Garamond',Georgia,serif;margin:2px 0;overflow-wrap:anywhere; }
+    .cardOrigin { font-size:10px;color:#bea9a2;line-height:1.3; }
+    .cardStats { border-top:1px solid #614950;padding-top:7px;display:flex;justify-content:space-between;font-size:9px;color:#dbbbb2;gap:8px; }
+    .cardStats span {text-align:left;}
+    .cardStats span:last-child {text-align:right;}
+    .cardStats b {display:block;font-size:13px;color:#f1dbd4;}
+    .textContent { text-align:left;overflow-y:auto;overscroll-behavior:contain;min-height:0;flex:1;scrollbar-width:thin;scrollbar-color:#7f5154 transparent;line-height:1.55;color:#dacbc7;font-size:12px;white-space:pre-line; }
+    .dossierTitle {text-align:left;font:600 27px/.95 'Cormorant Garamond',serif;margin:4px 0;color:#f2e8e1;}
+    .dossierSub {font-size:10px;color:#bda5a0;text-align:left;}
+    .rear {align-items:center;justify-content:center;position:relative;gap:13px;}
+    .rear:before {content:'';position:absolute;inset:18px;border:1px solid #63454b;pointer-events:none;}
+    .rearSigil {font:600 100px/.9 'Cormorant Garamond',Georgia,serif;color:#a75f64;text-shadow:0 0 30px #6e222baa;}
+    .rearTitle {font:600 35px/.89 'Cormorant Garamond',serif;}
+    .rearDetails {font-size:10px;line-height:1.6;color:#ac9794;letter-spacing:.08em;}
+    .reward-controls {width:100%;display:flex;flex-direction:column;gap:8px;align-items:center;flex:none;}
+    .reward-controls .action {min-height:43px;}
+    .reward-caption { font-size:11px;color:#b6a4a1;line-height:1.3;text-align:center; }
+    #rewardOverlay.entrance #cardStage { animation:emerge .94s cubic-bezier(.17,.87,.23,1.02) both; }
+    @keyframes emerge { 0% {opacity:0;transform:translate3d(var(--from-x,0px),var(--from-y,130px),-500px) scale(.16) rotateZ(-12deg);filter:blur(10px)} 73% {opacity:1;transform:translate3d(0,0,65px) scale(1.09) rotateZ(2deg);filter:blur(0)} 100% {opacity:1;transform:translate3d(0,0,0) scale(1) rotateZ(0);filter:blur(0)} }
+    @media (max-height:680px) { #cardStage {height:47dvh;width:calc(47dvh * .73)} .faceContent{padding:10px;gap:5px}.rearSigil{font-size:65px}.cardName{font-size:22px}.cardArtwork{min-height:65px}.reward-heading h2{font-size:26px}.reward-layout{gap:8px} }
+    @media (prefers-reduced-motion:reduce) { *,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;} }
+  </style>
+</head>
+<body>
+  <div id="ar"></div>
+  <div id="hud">
+    <div>
+      <div class="row"><span class="eyebrow">ARQUIVO DAS SOMBRAS · RITUAL</span><a id="home" href="/">← INÍCIO</a></div>
+      <h1>O ritual de descoberta</h1>
+      <span id="progress">Carregando 60 registros...</span>
+      <p id="status" role="status" aria-live="polite">Preparando a experiência de realidade aumentada.</p>
+    </div>
+    <div class="bottom">
+      <button class="action" id="start" disabled>INICIAR CÂMERA</button>
+      <button class="action" id="openChest" hidden>ABRIR BAÚ</button>
+      <p id="hint">Mantenha o QR 02 inteiro visível, com boa luz. O baú só abre quando você pedir.</p>
+    </div>
+  </div>
+
+  <div id="rewardOverlay" role="dialog" aria-modal="true" aria-label="Carta sorteada" hidden>
+    <div class="reward-layout">
+      <div class="reward-heading"><span class="eyebrow">REGISTRO ENCONTRADO · SORTEIO IGUALITÁRIO</span><h2>Uma lenda despertou.</h2></div>
+      <div id="cardStage">
+        <div id="cardRotor">
+          <div class="cardFace" id="faceA"></div>
+          <div class="cardFace" id="faceB"></div>
+        </div>
+      </div>
+      <div class="reward-controls">
+        <span class="reward-caption" id="flipLabel">FACE 1 DE 3 · ILUSTRAÇÃO E ATRIBUTOS</span>
+        <button class="action" id="flipButton">GIRAR CARTA →</button>
+        <button class="action secondary" id="rescanButton">ESCANEAR NOVAMENTE</button>
+        <span class="reward-caption" id="demoNotice">Coleção salva na sua conta. <a href="/?album=1">Abrir meu grimório</a></span>
+      </div>
+    </div>
+  </div>
+  <script src="/vendor/jsQR.js"></script>
+  <script type="module" src="/ra.js"></script>
+</body>
+</html>

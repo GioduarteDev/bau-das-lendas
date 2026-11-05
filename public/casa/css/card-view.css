@@ -1,0 +1,25 @@
+/* Flip compartilhado; mantém as classes e a curva de animação das cartas originais. */
+.carta-x { --rx:0deg; --ry:0deg; width:min(100%,var(--carta-l,250px)); display:flex; flex-direction:column; gap:10px; perspective:1200px; cursor:pointer; color:inherit; }
+.carta-x .cx-inclina { position:relative; aspect-ratio:2/3; transform-style:preserve-3d; transform:rotateX(var(--rx)) rotateY(var(--ry)); transition:transform .35s ease-out; }
+.carta-x .cx-virador { position:absolute; inset:0; transform-style:preserve-3d; transition:transform 1s cubic-bezier(.3,1.3,.4,1); }
+.carta-x .cx-lado { position:absolute; inset:0; border-radius:14px; backface-visibility:hidden; -webkit-backface-visibility:hidden; box-shadow:0 24px 40px #0008; }
+.carta-x .cx-verso { transform:rotateY(180deg); }
+.carta-x .face { position:absolute; inset:0; border-radius:14px; overflow:hidden; background:#1a1612; }
+.carta-x .face img { width:100%; height:100%; object-fit:contain; display:block; user-select:none; }
+.carta-x .holo { position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .3s; mix-blend-mode:color-dodge; background:linear-gradient(115deg,transparent 25%,#ff80a880 40%,#ffeeaa80 50%,#80ffe080 60%,transparent 75%); background-size:250% 250%; background-position:var(--gx,50%) var(--gy,50%); }
+.carta-x.ativa .holo { opacity:.12; }
+.carta-x .cx-legenda { display:flex; justify-content:space-between; gap:8px; font:10px var(--mono,monospace); color:var(--fumaca,#b8aca0); line-height:1.4; }
+.carta-x .cx-face { white-space:nowrap; }
+.carta-x .cx-ausente { display:grid; place-items:center; height:100%; padding:18px; text-align:center; font:16px Georgia,serif; color:#cbb9a3; }
+.carta-x:focus-visible { outline:2px solid var(--ambar,#d9a24a); outline-offset:5px; }
+.carta-x[data-unlocked="false"] { cursor:default; }
+.carta-x[data-unlocked="false"][role="button"] { cursor:pointer; }
+#dossie-carta.ilustrada { width:min(100%,280px); height:auto; aspect-ratio:auto; cursor:auto; }
+#dossie-carta.ilustrada .carta-x { --carta-l:280px; }
+.inspecao-arte .carta-x { --carta-l:min(160px,calc(24dvh * 2 / 3)); }
+.inspecao-arte .cx-legenda { display:none; }
+.inspecao-arte .carta-x:focus-visible { outline-offset:-2px; }
+.illustrated-card-container { width:100%; display:grid; place-items:center; }
+.carta .carta-arte-ilustrada { width:100%; height:100%; object-fit:contain; display:block; }
+.carta .carta-janela:has(.carta-arte-ilustrada) { min-height:0; background:#15110e; }
+@media(prefers-reduced-motion:reduce) { .carta-x,.carta-x * { animation:none!important; transition:none!important; } }

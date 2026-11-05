@@ -1,0 +1,6 @@
+.criaturas-inspector{position:relative;width:100%;height:100dvh;background:#151311;color:#e5d7bf;font:13px/1.5 system-ui,sans-serif}
+.criaturas-canvas{position:absolute;inset:0}.criaturas-canvas canvas{display:block;width:100%;height:100%;touch-action:none}
+.criaturas-topo{position:absolute;left:24px;right:24px;top:20px;display:flex;justify-content:space-between;gap:20px;pointer-events:none}.criaturas-topo a{pointer-events:auto;color:#caa97b}
+.criaturas-controles{position:absolute;left:24px;bottom:24px;padding:16px;background:#181410ed;border:1px solid #534331;display:flex;gap:12px;align-items:end;flex-wrap:wrap;max-width:calc(100% - 48px);border-radius:8px}
+.criaturas-controles label{display:flex;flex-direction:column;gap:4px}.criaturas-controles select,.criaturas-controles button{font:inherit;color:#edddc1;background:#292017;border:1px solid #786045;border-radius:4px;padding:8px}.criaturas-controles p{margin:0;color:#b2a18a;font-size:11px}
+@media(max-width:760px){.criaturas-topo{font-size:10px;left:12px;right:12px}.criaturas-controles{left:10px;bottom:10px;max-width:calc(100% - 20px);gap:7px;padding:10px;font-size:11px}.criaturas-controles select,.criaturas-controles button{padding:5px}.criaturas-controles p{display:none}}

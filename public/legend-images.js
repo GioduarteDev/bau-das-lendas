@@ -1,0 +1,507 @@
+// Gerado por scripts/sincronizar-imagens.mjs.
+export const legendImages = [
+  {
+    "id": "loira-do-banheiro",
+    "numero": 1,
+    "nome": "Loira do Banheiro",
+    "alt": "Carta ilustrada de Loira do Banheiro",
+    "src": "/casa/img/cartas/loira.jpg",
+    "srcSet": "",
+    "source": "public/casa/img/cartas/loira.jpg",
+    "sourceSha256": "179b9ab5e0ba03f0c05aee18101eccb7386e8a7effb6b555ae00591388c01452",
+    "crop": null
+  },
+  {
+    "id": "a-maldicao-de-kayako-saeki",
+    "numero": 2,
+    "nome": "A Maldição de Kayako Saeki",
+    "alt": "Carta ilustrada de A Maldição de Kayako Saeki",
+    "src": "/casa/img/cartas/kayako.jpg",
+    "srcSet": "",
+    "source": "public/casa/img/cartas/kayako.jpg",
+    "sourceSha256": "fcbc454b0594d80e9f5a6b9d7db849cd1f6e7b040f5e4987fc933e95656f047f",
+    "crop": null
+  },
+  {
+    "id": "kiyohime",
+    "numero": 3,
+    "nome": "Kiyohime",
+    "alt": "Carta ilustrada de Kiyohime",
+    "src": "/casa/img/cartas/kiyohime.jpg",
+    "srcSet": "",
+    "source": "public/casa/img/cartas/kiyohime.jpg",
+    "sourceSha256": "3846d36cdda208c8dbf6a0d4259a305a1de648babe529ef8feb3174b15e3a126",
+    "crop": null
+  },
+  {
+    "id": "tamamo-no-mae",
+    "numero": 4,
+    "nome": "Tamamo-no-Mae",
+    "alt": "Carta ilustrada de Tamamo-no-Mae",
+    "src": "/casa/img/cartas/tamamo.jpg",
+    "srcSet": "",
+    "source": "public/casa/img/cartas/tamamo.jpg",
+    "sourceSha256": "b61d84c230e6e4c84d6e8f35c0d13aa0beaef90f8712da7315420d68dd4c942b",
+    "crop": null
+  },
+  {
+    "id": "kisaragi-station",
+    "numero": 5,
+    "nome": "Kisaragi Station",
+    "alt": "Carta ilustrada de Kisaragi Station",
+    "src": "/casa/img/cartas/kisaragi.jpg",
+    "srcSet": "",
+    "source": "public/casa/img/cartas/kisaragi.jpg",
+    "sourceSha256": "dfe6c09d8f1cc7c36ac62209367b3dcc6b007d204c706b8cfa19983826fc0956",
+    "crop": null
+  },
+  {
+    "id": "hachishakusama",
+    "numero": 6,
+    "nome": "Hachishakusama",
+    "alt": "Carta ilustrada de Hachishakusama",
+    "src": "/casa/img/cartas/hachishakusama.jpg",
+    "srcSet": "",
+    "source": "public/casa/img/cartas/hachishakusama.jpg",
+    "sourceSha256": "48d03372bde342e226800290b9b03540ea3e3771bb9df3051fffceca28c9fa4d",
+    "crop": null
+  },
+  {
+    "id": "meng-jiangnu",
+    "numero": 7,
+    "nome": "Meng Jiangnü",
+    "alt": "Carta ilustrada de Meng Jiangnü",
+    "src": "/casa/img/cartas/meng-jiangnu.jpg",
+    "srcSet": "",
+    "source": "public/casa/img/cartas/meng-jiangnu.jpg",
+    "sourceSha256": "5508fe5ccde58c97a8fb8435291824afd4b7472f048a9704840df3ae611da152",
+    "crop": null
+  },
+  {
+    "id": "kuldhara",
+    "numero": 8,
+    "nome": "Kuldhara",
+    "alt": "Carta ilustrada de Kuldhara",
+    "src": "/casa/img/cartas/kuldhara.jpg",
+    "srcSet": "",
+    "source": "public/casa/img/cartas/kuldhara.jpg",
+    "sourceSha256": "d629ca7d3743ad2d580739f47ac3e2911b506726d18c12f927629290d6a592d4",
+    "crop": null
+  },
+  {
+    "id": "bakunawa",
+    "numero": 9,
+    "nome": "Bakunawa",
+    "alt": "Carta ilustrada de Bakunawa",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "o-flautista-de-hamelin",
+    "numero": 10,
+    "nome": "O Flautista de Hamelin",
+    "alt": "Carta ilustrada de O Flautista de Hamelin",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "a-dama-pe-de-cabra",
+    "numero": 11,
+    "nome": "A Dama Pé-de-Cabra",
+    "alt": "Carta ilustrada de A Dama Pé-de-Cabra",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "peter-stumpp",
+    "numero": 12,
+    "nome": "Peter Stumpp",
+    "alt": "Carta ilustrada de Peter Stumpp",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "licaao",
+    "numero": 13,
+    "nome": "Licaão",
+    "alt": "Carta ilustrada de Licaão",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "o-holandes-voador",
+    "numero": 14,
+    "nome": "O Holandês Voador",
+    "alt": "Carta ilustrada de O Holandês Voador",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "barba-azul",
+    "numero": 15,
+    "nome": "Barba Azul",
+    "alt": "Carta ilustrada de Barba Azul",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "negrinho-do-pastoreio",
+    "numero": 16,
+    "nome": "Negrinho do Pastoreio",
+    "alt": "Carta ilustrada de Negrinho do Pastoreio",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "ana-jansen",
+    "numero": 17,
+    "nome": "Ana Jansen",
+    "alt": "Carta ilustrada de Ana Jansen",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "el-hombre-caiman",
+    "numero": 18,
+    "nome": "El Hombre Caimán",
+    "alt": "Carta ilustrada de El Hombre Caimán",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "a-ilha-das-bonecas",
+    "numero": 19,
+    "nome": "A Ilha das Bonecas",
+    "alt": "Carta ilustrada de A Ilha das Bonecas",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "mary-san",
+    "numero": 20,
+    "nome": "Mary-san",
+    "alt": "Carta ilustrada de Mary-san",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "ningen",
+    "numero": 21,
+    "nome": "Ningen",
+    "alt": "Carta ilustrada de Ningen",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "o-jogo-do-elevador",
+    "numero": 22,
+    "nome": "O Jogo do Elevador",
+    "alt": "Carta ilustrada de O Jogo do Elevador",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "o-fusca-amarelo-da-rodovia-karak",
+    "numero": 23,
+    "nome": "O Fusca Amarelo da Rodovia Karak",
+    "alt": "Carta ilustrada de O Fusca Amarelo da Rodovia Karak",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "the-crying-boy",
+    "numero": 24,
+    "nome": "The Crying Boy",
+    "alt": "Carta ilustrada de The Crying Boy",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "black-volga",
+    "numero": 25,
+    "nome": "Black Volga",
+    "alt": "Carta ilustrada de Black Volga",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "this-man",
+    "numero": 26,
+    "nome": "This Man",
+    "alt": "Carta ilustrada de This Man",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "bush-baby",
+    "numero": 27,
+    "nome": "Bush Baby",
+    "alt": "Carta ilustrada de Bush Baby",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "mamlambo",
+    "numero": 28,
+    "nome": "Mamlambo",
+    "alt": "Carta ilustrada de Mamlambo",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "a-mulher-do-tunel-de-mount-victoria",
+    "numero": 29,
+    "nome": "A Mulher do Túnel de Mount Victoria",
+    "alt": "Carta ilustrada de A Mulher do Túnel de Mount Victoria",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "a-boneca-da-xuxa",
+    "numero": 30,
+    "nome": "A Boneca da Xuxa",
+    "alt": "Carta ilustrada de A Boneca da Xuxa",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "a-faca-do-fofao",
+    "numero": 31,
+    "nome": "A Faca do Fofão",
+    "alt": "Carta ilustrada de A Faca do Fofão",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "a-gangue-dos-palhacos",
+    "numero": 32,
+    "nome": "A Gangue dos Palhaços",
+    "alt": "Carta ilustrada de A Gangue dos Palhaços",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "o-et-de-varginha",
+    "numero": 33,
+    "nome": "O ET de Varginha",
+    "alt": "Carta ilustrada de O ET de Varginha",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "a-bruxa-de-guadalupe",
+    "numero": 34,
+    "nome": "A Bruxa de Guadalupe",
+    "alt": "Carta ilustrada de A Bruxa de Guadalupe",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "a-freira-do-hospital-de-torreon",
+    "numero": 35,
+    "nome": "A Freira do Hospital de Torreón",
+    "alt": "Carta ilustrada de A Freira do Hospital de Torreón",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "maria-de-avila",
+    "numero": 36,
+    "nome": "María de Ávila",
+    "alt": "Carta ilustrada de María de Ávila",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "slender-man",
+    "numero": 37,
+    "nome": "Slender Man",
+    "alt": "Carta ilustrada de Slender Man",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "polybius",
+    "numero": 38,
+    "nome": "Polybius",
+    "alt": "Carta ilustrada de Polybius",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "the-hands-resist-him",
+    "numero": 39,
+    "nome": "The Hands Resist Him",
+    "alt": "Carta ilustrada de The Hands Resist Him",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "as-escadas-no-meio-da-floresta",
+    "numero": 40,
+    "nome": "As Escadas no Meio da Floresta",
+    "alt": "Carta ilustrada de As Escadas no Meio da Floresta",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "romaozinho",
+    "numero": 41,
+    "nome": "Romãozinho",
+    "alt": "Carta ilustrada de Romãozinho",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "a-procissao-das-almas",
+    "numero": 42,
+    "nome": "A Procissão das Almas",
+    "alt": "Carta ilustrada de A Procissão das Almas",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "barbara-dos-prazeres",
+    "numero": 43,
+    "nome": "Bárbara dos Prazeres",
+    "alt": "Carta ilustrada de Bárbara dos Prazeres",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "almamula",
+    "numero": 44,
+    "nome": "Almamula",
+    "alt": "Carta ilustrada de Almamula",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "morgan-s-corner",
+    "numero": 45,
+    "nome": "Morgan's Corner",
+    "alt": "Carta ilustrada de Morgan's Corner",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "alyoshenka",
+    "numero": 46,
+    "nome": "Alyoshenka",
+    "alt": "Carta ilustrada de Alyoshenka",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "o-passaro-negro-de-chernobyl",
+    "numero": 47,
+    "nome": "O Pássaro Negro de Chernobyl",
+    "alt": "Carta ilustrada de O Pássaro Negro de Chernobyl",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "silverpilen",
+    "numero": 48,
+    "nome": "Silverpilen",
+    "alt": "Carta ilustrada de Silverpilen",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "sereias",
+    "numero": 49,
+    "nome": "Sereias",
+    "alt": "Carta ilustrada de Sereias",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "homem-do-saco",
+    "numero": 50,
+    "nome": "Homem do Saco",
+    "alt": "Carta ilustrada de Homem do Saco",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "leprechaun",
+    "numero": 51,
+    "nome": "Leprechaun",
+    "alt": "Carta ilustrada de Leprechaun",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "selkie",
+    "numero": 52,
+    "nome": "Selkie",
+    "alt": "Carta ilustrada de Selkie",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "as-sereias-de-odisseu",
+    "numero": 53,
+    "nome": "As Sereias de Odisseu",
+    "alt": "Carta ilustrada de As Sereias de Odisseu",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "baba-yaga",
+    "numero": 54,
+    "nome": "Baba Yaga",
+    "alt": "Carta ilustrada de Baba Yaga",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "boitata",
+    "numero": 55,
+    "nome": "Boitatá",
+    "alt": "Carta ilustrada de Boitatá",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "annabelle",
+    "numero": 56,
+    "nome": "Annabelle",
+    "alt": "Carta ilustrada de Annabelle",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "umibozu",
+    "numero": 57,
+    "nome": "Umibōzu",
+    "alt": "Carta ilustrada de Umibōzu",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "kappa",
+    "numero": 58,
+    "nome": "Kappa",
+    "alt": "Carta ilustrada de Kappa",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "kasa-obake",
+    "numero": 59,
+    "nome": "Kasa-obake",
+    "alt": "Carta ilustrada de Kasa-obake",
+    "src": "",
+    "srcSet": ""
+  },
+  {
+    "id": "la-ursa",
+    "numero": 60,
+    "nome": "La Ursa",
+    "alt": "Carta ilustrada de La Ursa",
+    "src": "",
+    "srcSet": ""
+  }
+];
