@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cartaz do ritual · Baú das Lendas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* Cartaz A4 para imprimir: a CASA é a imagem que a câmera reconhece (MindAR);
+       o QR abaixo dela só abre o ritual no celular. Não corte nem recolora a casa. */
+    @page { size: A4 portrait; margin: 0; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #2a2622; color: #efe6d2; font-family: 'IBM Plex Mono', monospace; }
+    .folha { width: 210mm; height: 297mm; margin: 24px auto; padding: 12mm 12mm 10mm; background: #0b0a09;
+      display: flex; flex-direction: column; gap: 7mm; box-shadow: 0 20px 60px rgba(0,0,0,.6);
+      -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .alvo { display: block; width: 168mm; height: 224mm; margin: 0 auto; object-fit: contain; }
+    .faixa { flex: 1; display: grid; grid-template-columns: auto 1fr; gap: 7mm; align-items: center; border-top: 0.3mm solid #5a5349; padding-top: 6mm; }
+    .qr { width: 34mm; height: 34mm; padding: 2mm; background: #fff; }
+    .qr svg { display: block; width: 100%; height: 100%; }
+    ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 2.4mm; font-size: 9.5pt; letter-spacing: .06em; line-height: 1.35; }
+    ol b { font: 400 15pt 'Instrument Serif', Georgia, serif; letter-spacing: 0; color: #fff; margin-right: 2mm; }
+    .url { font-size: 7.5pt; color: #8f877a; word-break: break-all; margin-top: 1mm; }
+    .acoes { width: 210mm; margin: 0 auto 32px; display: flex; gap: 12px; align-items: center; justify-content: space-between; color: #cbc2b2; font-size: 12px; }
+    .acoes button { min-height: 44px; padding: 0 20px; border: 1px solid #d9a24a; background: none; color: #d9a24a; font: 12px 'IBM Plex Mono', monospace; letter-spacing: .18em; cursor: pointer; }
+    .acoes button:hover { background: #d9a24a; color: #0b0a09; }
+    @media print { html, body { background: #0b0a09; } .folha { margin: 0; box-shadow: none; } .acoes { display: none; } }
+    @media (max-width: 860px) { .folha { transform: scale(.45); transform-origin: top center; margin-bottom: -160mm; } .acoes { width: auto; padding: 0 16px; flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <main class="folha">
+    <img class="alvo" src="/alvos/casa.jpg" alt="Desenho da casa do Baú das Lendas: a imagem que a câmera reconhece">
+    <div class="faixa">
+      <div class="qr" id="qr" role="img" aria-label="QR code que abre o ritual em realidade aumentada"></div>
+      <div>
+        <ol>
+          <li><b>1</b>LEIA O QR COM O CELULAR</li>
+          <li><b>2</b>ENTRE NA SUA CONTA E PERMITA A CÂMERA</li>
+          <li><b>3</b>APONTE PARA A CASA E ABRA O BAÚ</li>
+        </ol>
+        <div class="url" id="url"></div>
+      </div>
+    </div>
+  </main>
+  <div class="acoes">
+    <span>O QR aponta para este site. Para outro endereço, use <code>?url=https://seu-dominio</code>.</span>
+    <button type="button" onclick="print()">IMPRIMIR CARTAZ</button>
+  </div>
+  <script src="/vendor/qrcode-generator.js"></script>
+  <script>
+    (function () {
+      const pedido = new URLSearchParams(location.search).get('url');
+      const base = (pedido && /^https?:\/\//.test(pedido) ? pedido : location.origin).replace(/\/+$/, '');
+      const alvo = base + '/ra.html';
+      const qr = qrcode(0, 'M');
+      qr.addData(alvo);
+      qr.make();
+      document.getElementById('qr').innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+      document.getElementById('url').textContent = alvo;
+    })();
+  </script>
+</body>
+</html>

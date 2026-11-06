@@ -36,7 +36,7 @@ test('cliente trata API indisponível e sessão expirada sem inventar resultado'
   } finally { globalThis.fetch = original }
 })
 
-async function prepareRa({ pending = false, complete = false } = {}) {
+async function prepareRa({ pending = false, complete = false, modo = 'cartaz' } = {}) {
   const elements = new Map()
   function element() {
     return { handlers: {}, style: { setProperty() {} }, classList: { add() {}, remove() {} },
@@ -76,7 +76,10 @@ async function prepareRa({ pending = false, complete = false } = {}) {
   const calls = []
   let fail = true, clock = 0
   const storage = new Map(pending ? [['bau-pending-draw:user-1', 'pending-opening']] : [])
-  const context = vm.createContext({ document, THREE, QRTrackerThree: MindARThree, console, crypto, legendImages,
+  const cameraPedida = []
+  const context = vm.createContext({ document, THREE, QRTrackerThree: MindARThree, MindARThree, console, crypto, legendImages,
+    URLSearchParams, location: { search: modo === 'qr' ? '?rastreio=qr' : '' }, isSecureContext: true,
+    navigator: { mediaDevices: { getUserMedia: async (c) => { cameraPedida.push(c); return { getTracks: () => [{ stop() {} }] } } } },
     window: { addEventListener() {}, location: { reload() {} } },
     performance: { now: () => clock }, innerWidth: 800, innerHeight: 600,
     sessionStorage: { getItem: k => storage.get(k), setItem: (k, v) => storage.set(k, v), removeItem: k => storage.delete(k) },
@@ -92,13 +95,14 @@ async function prepareRa({ pending = false, complete = false } = {}) {
   const source = (await readFile(new URL('../public/ra.js', import.meta.url), 'utf8')).replace(/^import .*;\r?\n/gm, '')
   vm.runInContext(source.replace('startExperience().catch', 'globalThis.ready = startExperience().catch'), context)
   await context.ready
-  return { elements, calls, mindar, storage, objects, setTime: value => { clock = value } }
+  return { elements, calls, mindar, storage, objects, cameraPedida, setTime: value => { clock = value } }
 }
 
-test('RA sorteia só no toque, reutiliza chave no retry e cria outra após escanear novamente', async () => {
-  const { elements: e, calls, mindar, objects, setTime } = await prepareRa()
+for (const modo of ['cartaz', 'qr']) test(`RA (${modo}) sorteia só no toque, reutiliza chave no retry e cria outra após escanear novamente`, async () => {
+  const { elements: e, calls, mindar, objects, setTime, cameraPedida } = await prepareRa({ modo })
   const click = id => e.get(id).handlers.click()
   await click('#start')
+  assert.equal(cameraPedida.length, modo === 'cartaz' ? 1 : 0, 'No modo cartaz a câmera é pedida antes do MindAR')
   mindar.anchor.onTargetFound()
   assert.equal(calls.filter(c => c.path === '/draws').length, 0)
   await click('#openChest') // falha de rede

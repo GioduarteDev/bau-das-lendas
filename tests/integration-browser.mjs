@@ -60,7 +60,7 @@ try {
     }, { qrs })
     let draws = 0
     page.on('request', request => { if (request.url().endsWith('/api/draws')) draws++ })
-    await page.goto(`${origin}/ra.html`)
+    await page.goto(`${origin}/ra.html?rastreio=qr`)
     await page.getByRole('button', { name: 'INICIAR CÂMERA' }).click()
     await page.evaluate(() => auditCamera.marker(0))
     await page.waitForTimeout(700)

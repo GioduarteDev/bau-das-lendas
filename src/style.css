@@ -556,6 +556,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--osso); outline-
 .portais-nota { max-width: 540px; margin: 32px auto 0; text-align: center; font: italic 400 17px / 1.6 var(--serifa); color: var(--texto-sutil); }
 .portais-dev { color: #9b4a54; }
 .portais-imprimir { display: block; margin: 24px auto 0; }
+.portais-cartaz { display: table; margin: 20px auto 0; }
 
 @media print {
   body * { visibility: hidden; }

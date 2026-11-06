@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { QRTrackerThree } from '/qr-tracker.js';
+import { MindARThree } from '/vendor/mindar/mindar-image-three.prod.js';
 import { api } from '/api.js';
 import { legendImages } from '/legend-images.js';
 
@@ -7,6 +8,38 @@ const $ = (selector) => document.querySelector(selector);
 const STATUS = $('#status');
 const faceA = $('#faceA');
 const faceB = $('#faceB');
+// Rastreamento: por padrão, o cartaz da casa (MindAR, imagem-alvo em /alvos/casa.mind).
+// /ra.html?rastreio=qr usa o rastreador antigo pelo próprio QR 02 (contingência e testes).
+const MODO_QR = new URLSearchParams(globalThis.location?.search || '').get('rastreio') === 'qr';
+const ALVO = MODO_QR ? 'QR 02' : 'cartaz da casa';
+
+// Abre o MindAR com as mesmas peças que o resto do ritual já usa (renderer, scene, camera, âncora).
+function criarRastreador(container) {
+  if (MODO_QR) return new QRTrackerThree({ container });
+  const mind = new MindARThree({
+    container,
+    imageTargetSrc: '/alvos/casa.mind',
+    uiLoading: 'no', uiScanning: 'no', uiError: 'no',
+    filterMinCF: 0.0001, filterBeta: 0.001,      // suaviza o tremor do baú
+    warmupTolerance: 3, missTolerance: 10          // perde o alvo só depois de alguns quadros
+  });
+  const iniciar = mind.start.bind(mind);
+  mind.start = async () => {
+    if (!globalThis.isSecureContext) throw Object.assign(new Error('A câmera exige HTTPS.'), { name: 'SecurityError' });
+    if (!globalThis.navigator?.mediaDevices?.getUserMedia) throw Object.assign(new Error('Este navegador não oferece câmera.'), { name: 'NotFoundError' });
+    // Pede a câmera antes: o MindAR engole o motivo do erro (permissão negada, sem câmera…).
+    const teste = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+    teste.getTracks().forEach(t => t.stop());
+    try { await iniciar(); }
+    catch (erro) { throw erro || new Error('Não foi possível iniciar a câmera.'); }
+  };
+  mind.dispose = () => {
+    try { mind.stop(); } catch { /* já parado */ }
+    mind.renderer.setAnimationLoop(null);
+  };
+  return mind;
+}
+
 const flipLabels = ['FACE 1 DE 3 · FRENTE E ATRIBUTOS', 'FACE 2 DE 3 · HISTÓRIA DA LENDA', 'FACE 3 DE 3 · VERSO DA COLEÇÃO'];
 
 function escapeHtml(value) {
@@ -100,15 +133,18 @@ async function startExperience() {
 
   function updateProgress() { $('#progress').textContent=`${progress.obtained} / 60 REGISTROS DESCOBERTOS`; }
   updateProgress();
-  STATUS.textContent='Inicie a câmera e aponte para o QR 02 que abriu este ritual.';
+  STATUS.textContent=`Inicie a câmera e aponte para o ${ALVO}.`;
   startButton.disabled=false;
 
-  const tracker=new QRTrackerThree({container:$('#ar')});
+  const tracker=criarRastreador($('#ar'));
   window.addEventListener('pagehide', () => tracker.dispose(), {once:true});
   window.addEventListener('pageshow', event => { if(event.persisted) window.location.reload(); });
   const {renderer,scene,camera}=tracker;
   renderer.outputColorSpace=THREE.SRGBColorSpace;
-  const anchor=tracker.addAnchor(0), root=anchor.group;
+  const anchor=tracker.addAnchor(0);
+  // No cartaz (largura = 1), o baú fica menor e encostado na porta da casa desenhada.
+  const root=new THREE.Group();anchor.group.add(root);
+  if(!MODO_QR){root.scale.setScalar(.62);root.position.set(0,-.44,0);}
   scene.add(new THREE.AmbientLight(0xffffff,1.2));
   const light=new THREE.DirectionalLight(0xf4c6b4,2.1);light.position.set(2,3,5);scene.add(light);
   const rim=new THREE.DirectionalLight(0x8a839f,1.0);rim.position.set(-3,-1,3);scene.add(rim);
@@ -140,9 +176,9 @@ async function startExperience() {
     const full=progress.complete && !openingKey;
     openButton.hidden=full || !detected || freshScanRequired;
     if (full) STATUS.textContent='Você encontrou todas as 60 cartas da coleção!';
-    else if(freshScanRequired) STATUS.textContent=hasSeenTargetAway?'Aponte novamente para o QR 02 para iniciar outra abertura.':'Afaste a câmera do QR 02 e volte a apontar para ele.';
-    else if(detected) STATUS.textContent='QR 02 reconhecido. Toque em ABRIR BAÚ para descobrir uma carta!';
-    else STATUS.textContent='Aponte para o QR 02 impresso ou exibido em outra tela.';
+    else if(freshScanRequired) STATUS.textContent=hasSeenTargetAway?`Aponte novamente para o ${ALVO} para iniciar outra abertura.`:`Afaste a câmera do ${ALVO} e volte a apontar para ele.`;
+    else if(detected) STATUS.textContent=`${MODO_QR?'QR 02 reconhecido':'A casa apareceu'}. Toque em ABRIR BAÚ para descobrir uma carta!`;
+    else STATUS.textContent=MODO_QR?'Aponte para o QR 02 impresso ou exibido em outra tela.':'Aponte para o cartaz da casa, inteiro na tela e com boa luz.';
   }
   anchor.onTargetFound=()=>{
     detected=true;
@@ -253,7 +289,7 @@ async function startExperience() {
 
   startButton.addEventListener('click',async()=>{
     if(started)return;
-    startButton.disabled=true;STATUS.textContent='Abrindo a câmera para reconhecer o QR 02…';
+    startButton.disabled=true;STATUS.textContent=`Abrindo a câmera para reconhecer o ${ALVO}…`;
     try {
       await tracker.start();started=true;startButton.hidden=true;showReady();
       renderer.setAnimationLoop(()=>{
@@ -267,7 +303,7 @@ async function startExperience() {
           card3d.position.set(0,.05+.68*t,.22+.8*t);
           card3d.scale.setScalar(.13+1.08*t);
           card3d.rotation.z=Math.sin(t*Math.PI)*-.06;
-          if(elapsed>=1750) showReward();
+          if(elapsed>=1750) { globalThis.navigator?.vibrate?.([30,60,120]); showReward(); }
         } else if(phase==='ready'||phase==='idle') {
           hinge.rotation.x=THREE.MathUtils.lerp(hinge.rotation.x,0,.12);
           innerGlow.intensity=THREE.MathUtils.lerp(innerGlow.intensity,0,.12);
@@ -276,9 +312,9 @@ async function startExperience() {
       });
     } catch(error) {
       console.error(error);
-      STATUS.textContent=error.name==='NotAllowedError' ? 'Permita o acesso à câmera no navegador e tente novamente.'
-        : error.name==='NotFoundError' ? 'Nenhuma câmera foi encontrada neste dispositivo.'
-        : `Não foi possível iniciar a câmera: ${error.message}`;
+      STATUS.textContent=error?.name==='NotAllowedError' ? 'Permita o acesso à câmera no navegador e tente novamente.'
+        : error?.name==='NotFoundError' ? 'Nenhuma câmera foi encontrada neste dispositivo.'
+        : `Não foi possível iniciar a câmera: ${error?.message || 'erro desconhecido'}`;
       startButton.disabled=false;
     }
   });

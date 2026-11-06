@@ -25,3 +25,13 @@ Preencher modelo/aparelho, sistema, navegador, data, domínio HTTPS e resultado 
 | Desempenho, aquecimento, iluminação baixa, reflexo e QR pequeno aceitáveis | PENDENTE | PENDENTE |
 
 Registrar evidências e falhas. Não trocar o rastreador antes de medir o problema no aparelho real. A estimativa atual usa câmera não calibrada; estabilidade e escala dependem dessa validação.
+
+## Cartaz da casa (MindAR) — acrescentado em 06/11/2026
+
+| Verificação | Android físico | iPhone físico |
+| --- | --- | --- |
+| Cartaz A4 impresso: casa reconhecida a 30–60 cm | PENDENTE | PENDENTE |
+| Casa reconhecida em outra tela (notebook/projetor) | PENDENTE | PENDENTE |
+| Baú estável sobre a porta ao mover o celular devagar | PENDENTE | PENDENTE |
+| Luz baixa e reflexo no papel | PENDENTE | PENDENTE |
+| Contingência `/ra.html?rastreio=qr` funciona | PENDENTE | PENDENTE |

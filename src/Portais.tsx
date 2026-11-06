@@ -26,7 +26,7 @@ const portais = [
   {
     numero: '02',
     titulo: 'O Ritual',
-    texto: 'Abre o ritual em realidade aumentada. Use o navegador do celular e permita a câmera.',
+    texto: 'Abre o ritual em realidade aumentada. Leia com o celular, permita a câmera e aponte para o cartaz da casa.',
     url: URL_RA,
   },
 ]
@@ -81,8 +81,11 @@ export default function Portais({ aoFechar }: Props) {
         </div>
 
         <p className="portais-nota">
-          Para invocar, deixe o QR 02 impresso ou aberto em outra tela e mantenha-o à vista da câmera.
+          Para invocar, imprima o cartaz da casa (ou deixe-o aberto em outra tela) e aponte a câmera para o desenho.
         </p>
+        <a className="botao-ritual portais-cartaz" href={`/cartaz.html?url=${encodeURIComponent(base)}`} target="_blank" rel="noreferrer">
+          Abrir o cartaz para imprimir <span aria-hidden="true">↗</span>
+        </a>
         {aviso && <p className="portais-nota portais-dev">{aviso}</p>}
 
         <button type="button" className="botao-discreto portais-imprimir" onClick={() => window.print()}>

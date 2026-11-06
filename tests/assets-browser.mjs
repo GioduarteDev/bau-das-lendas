@@ -71,7 +71,7 @@ try {
       return canvas.captureStream(15)
     }
   }, { qr, userId: user.id, key: loiraKey })
-  await page.goto(`${origin}/ra.html`)
+  await page.goto(`${origin}/ra.html?rastreio=qr`)
   await page.locator('#start').click()
   await page.locator('#openChest:not([hidden])').waitFor()
   await page.locator('#openChest').click()
@@ -99,7 +99,7 @@ try {
 
   const anonymous = await browser.newContext()
   const unauthPage = await anonymous.newPage()
-  await unauthPage.goto(`${origin}/ra.html`)
+  await unauthPage.goto(`${origin}/ra.html?rastreio=qr`)
   const loginLink = unauthPage.getByRole('link', { name: 'Entrar na conta', exact: true })
   await loginLink.click()
   await unauthPage.getByLabel('E-mail', { exact: true }).waitFor()

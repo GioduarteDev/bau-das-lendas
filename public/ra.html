@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#08090b" />
   <title>Baú das Lendas | Ritual de Descoberta em RA</title>
-  <!-- Bibliotecas mantidas nas mesmas versões do protótipo que você já usou. -->
+  <!-- Three.js 0.160 e MindAR 1.2.5 servidos localmente (public/vendor). -->
   <script type="importmap">
     {
       "imports": {
-        "three": "/vendor/three.module.js"
+        "three": "/vendor/three.module.js",
+        "three/addons/": "/vendor/three-addons/"
       }
     }
   </script>
@@ -90,7 +91,7 @@
     <div class="bottom">
       <button class="action" id="start" disabled>INICIAR CÂMERA</button>
       <button class="action" id="openChest" hidden>ABRIR BAÚ</button>
-      <p id="hint">Mantenha o QR 02 inteiro visível, com boa luz. O baú só abre quando você pedir.</p>
+      <p id="hint">Enquadre o cartaz da casa inteiro, com boa luz. O baú só abre quando você pedir.</p>
     </div>
   </div>
 
