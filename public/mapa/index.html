@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d0812">
+<title>Mapa das Lendas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  /* Mapa das Lendas — mapa-múndi com as 60 lendas, coloridas pelo reino. */
+  :root {
+    --noite: #0d0812; --tinta: #f3e9da; --apagado: #a99cb3; --linha: #3a2c46; --terra: #22142f; --borda-terra: #4a3560; --ouro: #f2c14e;
+    --display: 'Grenze Gotisch', Georgia, serif; --texto: 'Newsreader', Georgia, serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; overflow: hidden; background: var(--noite); color: var(--tinta); font-family: var(--texto); }
+  .topo { position: fixed; z-index: 5; inset: 0 0 auto; display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; justify-content: space-between;
+    padding: calc(env(safe-area-inset-top, 0px) + 16px) max(16px, env(safe-area-inset-right, 0px)) 16px max(16px, env(safe-area-inset-left, 0px));
+    background: linear-gradient(rgba(13,8,18,.95), rgba(13,8,18,0)); pointer-events: none; }
+  .topo > * { pointer-events: auto; }
+  .marca { font: 700 28px/1 var(--display); text-decoration: none; color: inherit; }
+  .marca small { display: block; margin-top: 6px; font: 10px var(--mono); letter-spacing: .28em; color: var(--apagado); }
+  .atalhos { display: flex; flex-wrap: wrap; gap: 6px; }
+  .atalhos a, .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 14px; border: 1px solid var(--linha); background: rgba(13,8,18,.75); color: var(--tinta); font: 11px var(--mono); letter-spacing: .18em; text-decoration: none; cursor: pointer; }
+  .atalhos a:hover, .btn:hover { border-color: #6fe3c4; color: #6fe3c4; }
+  :focus-visible { outline: 2px solid var(--ouro); outline-offset: 2px; }
+  #mapa { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+  #mapa.arrastando { cursor: grabbing; }
+  .oceano { fill: url(#fundo-oceano); }
+  .grade { fill: none; stroke: rgba(176,140,255,.08); stroke-width: .5; vector-effect: non-scaling-stroke; }
+  .pais { fill: var(--terra); stroke: var(--borda-terra); stroke-width: .5; vector-effect: non-scaling-stroke; }
+  .pais.tem-lenda { fill: #2e1b40; }
+  .pino { cursor: pointer; }
+  .pino .halo { opacity: .0; transition: opacity .3s; }
+  .pino.tem .halo { opacity: .35; animation: pulsar 2.6s ease-in-out infinite; }
+  .pino .ponto { stroke: var(--noite); vector-effect: non-scaling-stroke; stroke-width: 1.5; }
+  .pino.falta .ponto { fill: var(--noite) !important; stroke: var(--c); stroke-width: 2; }
+  .pino:hover .ponto, .pino.ativo .ponto { stroke: var(--tinta); stroke-width: 2.5; }
+  .pino.oculto { display: none; }
+  @keyframes pulsar { 50% { opacity: .08; } }
+  .rodape { position: fixed; z-index: 5; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); right: max(16px, env(safe-area-inset-right, 0px));
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; justify-content: space-between; pointer-events: none; }
+  .rodape > * { pointer-events: auto; }
+  .filtros, .zonas { display: flex; flex-wrap: wrap; gap: 6px; }
+  .filtro { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px; border: 1px solid var(--linha); background: rgba(13,8,18,.8); color: var(--tinta); font: 10px var(--mono); letter-spacing: .14em; cursor: pointer; }
+  .filtro i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 10px var(--c); }
+  .filtro[aria-pressed="false"] { opacity: .4; }
+  .zonas .btn { min-height: 36px; font-size: 10px; padding: 0 10px; }
+  .painel { position: fixed; z-index: 6; top: 104px; right: max(16px, env(safe-area-inset-right, 0px)); width: min(340px, calc(100% - 32px)); max-height: calc(100% - 200px); overflow: auto;
+    padding: 20px; background: rgba(16,10,22,.92); border: 1px solid var(--linha); border-top: 3px solid var(--c, var(--ouro)); backdrop-filter: blur(6px); display: flex; flex-direction: column; gap: 10px; }
+  .painel[hidden] { display: none; }
+  .olho { font: 10px var(--mono); letter-spacing: .24em; color: var(--c, var(--ouro)); }
+  .painel h2 { margin: 0; font: 700 34px/1.02 var(--display); text-wrap: balance; }
+  .painel p { margin: 0; font-size: 16px; line-height: 1.5; color: #d8cfe0; }
+  .painel .origem { font-style: italic; color: var(--c, var(--ouro)); }
+  .painel .arte { width: 120px; aspect-ratio: 2 / 3; background: #120a18 center / cover no-repeat; border: 1px solid var(--linha); }
+  .painel .acoes { display: flex; flex-wrap: wrap; gap: 6px; }
+  .resumo { font: 11px var(--mono); letter-spacing: .2em; color: var(--apagado); }
+  .resumo b { color: var(--ouro); font-weight: 500; }
+  .dica-pino { position: fixed; z-index: 7; pointer-events: none; transform: translate(-50%, calc(-100% - 14px)); padding: 6px 10px; background: rgba(13,8,18,.92); border: 1px solid var(--c); font: 700 18px var(--display); white-space: nowrap; }
+  .dica-pino[hidden] { display: none; }
+  @media (max-width: 760px) {
+    .painel { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 118px); max-height: 46%; }
+    .painel h2 { font-size: 28px; }
+    .atalhos a, .btn { min-height: 34px; padding: 0 9px; font-size: 10px; }
+    .filtro { min-height: 32px; padding: 0 9px; flex: none; }
+    .rodape { flex-direction: column; align-items: stretch; gap: 8px; }
+    .filtros, .zonas { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .zonas .btn { flex: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .pino.tem .halo { animation: none; } }
+</style>
+</head>
+<body>
+<svg id="mapa" role="img" aria-label="Mapa-múndi com as 60 lendas do Baú">
+  <defs>
+    <radialGradient id="fundo-oceano" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="#1c0f2a"/><stop offset="1" stop-color="#0a0610"/></radialGradient>
+    <filter id="brilho" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3"/></filter>
+  </defs>
+  <g id="mundo"></g>
+</svg>
+
+<header class="topo">
+  <a class="marca" href="/">Baú das Lendas<small>MAPA DAS 60 LENDAS</small></a>
+  <nav class="atalhos" aria-label="Outras passagens">
+    <a href="/">ARQUIVO</a>
+    <a href="/reino/index.html">REINO 3D</a>
+    <a href="/quiz/index.html">QUIZ</a>
+    <a href="/ra.html">RA</a>
+  </nav>
+</header>
+
+<aside class="painel" id="painel" aria-live="polite" hidden></aside>
+<div class="dica-pino" id="dica" hidden></div>
+
+<footer class="rodape">
+  <div>
+    <p class="resumo" id="resumo"></p>
+    <div class="filtros" id="filtros" role="group" aria-label="Filtrar por reino"></div>
+  </div>
+  <div class="zonas" role="group" aria-label="Aproximar o mapa">
+    <button type="button" class="btn" data-zona="mundo">MUNDO</button>
+    <button type="button" class="btn" data-zona="americas">AMÉRICAS</button>
+    <button type="button" class="btn" data-zona="brasil">BRASIL</button>
+    <button type="button" class="btn" data-zona="europa">EUROPA</button>
+    <button type="button" class="btn" data-zona="asia">ÁSIA</button>
+    <button type="button" class="btn" data-zona="japao">JAPÃO</button>
+  </div>
+</footer>
+
+<script src="/vendor/geo/d3-array.min.js"></script>
+<script src="/vendor/geo/d3-geo.min.js"></script>
+<script src="/vendor/geo/topojson-client.min.js"></script>
+<script type="module">
+import { api } from '/api.js';
+import { officialArtFiles, canonicalCardId } from '/card-art.js';
+import { INFO_REINOS, reinoDe, LUGARES } from '/reinos.js';
+
+const NS = 'http://www.w3.org/2000/svg';
+const $ = (id) => document.getElementById(id);
+const esc = (t) => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const svg = $('mapa'), mundo = $('mundo');
+
+const [catalogo, topo] = await Promise.all([
+  fetch('/lendas-ra.json').then(r => r.json()),
+  fetch('/vendor/geo/countries-50m.json').then(r => r.json()),
+]);
+let coletadas = new Set(), logado = false;
+try { const a = await api('/album'); logado = true; a.positions.forEach(p => { if (p.unlocked && p.legend) coletadas.add(canonicalCardId(p.legend.id)); }); } catch (e) { /* visitante */ }
+
+/* ---------- geografia ---------- */
+const W = 1000, H = 520;
+const paises = topojson.feature(topo, topo.objects.countries).features.filter(f => f.id !== '010'); // sem Antártida (polui o mapa)
+const proj = d3.geoNaturalEarth1().fitExtent([[10, 10], [W - 10, H - 10]], { type: 'Sphere' });
+const caminho = d3.geoPath(proj);
+const el = (tag, attrs = {}, pai = mundo) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); pai.append(e); return e; };
+el('path', { class: 'oceano', d: caminho({ type: 'Sphere' }) });
+el('path', { class: 'grade', d: caminho(d3.geoGraticule10()) });
+const lendas = catalogo.map(l => ({ ...l, reino: reinoDe(l.numero), lugar: LUGARES[l.numero], tem: coletadas.has(l.id) }));
+const paisesComLenda = new Set(paises.filter(f => lendas.some(l => d3.geoContains(f, [l.lugar[1], l.lugar[0]]))).map(f => f.id));
+paises.forEach(f => el('path', { class: 'pais' + (paisesComLenda.has(f.id) ? ' tem-lenda' : ''), d: caminho(f) }));
+
+/* ---------- pinos ---------- */
+const camadaPinos = el('g', { id: 'pinos' });
+const pinos = lendas.map(l => {
+  const [x, y] = proj([l.lugar[1], l.lugar[0]]), cor = INFO_REINOS[l.reino].cor;
+  const g = el('g', { class: `pino ${l.tem ? 'tem' : 'falta'}`, tabindex: '0', role: 'button', 'aria-label': `${l.nome}${l.tem ? ', carta coletada' : ''}` }, camadaPinos);
+  g.style.setProperty('--c', cor);
+  const halo = el('circle', { class: 'halo', fill: cor, filter: 'url(#brilho)' }, g);
+  const ponto = el('circle', { class: 'ponto', fill: cor }, g);
+  g.addEventListener('click', (e) => { e.stopPropagation(); abrir(l, g); });
+  g.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(l, g); } });
+  g.addEventListener('pointerenter', () => mostrarDica(l, g));
+  g.addEventListener('pointerleave', () => { $('dica').hidden = true; });
+  return { l, g, x, y, halo, ponto };
+});
+
+/* ---------- câmera (viewBox) ---------- */
+let vista = { x: 0, y: 0, w: W, h: H };
+const ZONAS = { mundo: [[-170, 75], [180, -58]], americas: [[-165, 62], [-30, -56]], brasil: [[-75, 6], [-33, -34]],
+  europa: [[-12, 63], [42, 34]], asia: [[60, 52], [150, -10]], japao: [[127, 45.5], [146, 30.5]] };
+function aplicar() {
+  const r = svg.getBoundingClientRect(), aspecto = r.width / r.height;
+  // mantém a proporção da tela sem distorcer
+  let { x, y, w, h } = vista;
+  if (w / h > aspecto) { const nh = w / aspecto; y -= (nh - h) / 2; h = nh; } else { const nw = h * aspecto; x -= (nw - w) / 2; w = nw; }
+  svg.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
+  const porPx = w / r.width, raio = (r.width < 760 ? 5.5 : 6.5) * porPx;   // tamanho fixo na tela, em qualquer zoom
+  pinos.forEach(p => { [p.ponto, p.halo].forEach((c, i) => { c.setAttribute('cx', p.x); c.setAttribute('cy', p.y); c.setAttribute('r', i ? raio * 2.4 : raio); }); });
+}
+function irPara(zona, suave = true) {
+  const [[o, n], [l, s]] = ZONAS[zona];
+  const [x0, y0] = proj([o, n]), [x1, y1] = proj([l, s]);
+  const alvo = { x: Math.min(x0, x1), y: Math.min(y0, y1), w: Math.abs(x1 - x0), h: Math.abs(y1 - y0) };
+  animarPara(alvo, suave);
+}
+let animacao = 0;
+function animarPara(alvo, suave) {
+  cancelAnimationFrame(animacao);
+  if (!suave || matchMedia('(prefers-reduced-motion: reduce)').matches) { vista = alvo; aplicar(); return; }
+  const de = { ...vista }, t0 = performance.now();
+  const passo = (t) => { const u = Math.min(1, (t - t0) / 700), e = 1 - Math.pow(1 - u, 3);
+    vista = { x: de.x + (alvo.x - de.x) * e, y: de.y + (alvo.y - de.y) * e, w: de.w + (alvo.w - de.w) * e, h: de.h + (alvo.h - de.h) * e };
+    aplicar(); if (u < 1) animacao = requestAnimationFrame(passo); };
+  animacao = requestAnimationFrame(passo);
+}
+function paraSvg(cx, cy) { const p = svg.createSVGPoint(); p.x = cx; p.y = cy; return p.matrixTransform(svg.getScreenCTM().inverse()); }
+function zoom(fator, cx, cy) {
+  const p = paraSvg(cx, cy), nw = Math.min(W * 1.2, Math.max(W / 40, vista.w * fator)), f = nw / vista.w;
+  vista = { x: p.x - (p.x - vista.x) * f, y: p.y - (p.y - vista.y) * f, w: nw, h: vista.h * f }; aplicar();
+}
+svg.addEventListener('wheel', (e) => { e.preventDefault(); cancelAnimationFrame(animacao); zoom(e.deltaY > 0 ? 1.15 : 1 / 1.15, e.clientX, e.clientY); }, { passive: false });
+const toques = new Map(); let ultimo = null, distancia = 0, moveu = false;
+svg.addEventListener('pointerdown', (e) => { if (e.target.closest('.pino')) return; svg.setPointerCapture(e.pointerId); toques.set(e.pointerId, e); ultimo = paraSvg(e.clientX, e.clientY); moveu = false; svg.classList.add('arrastando'); cancelAnimationFrame(animacao);
+  if (toques.size === 2) { const [a, b] = [...toques.values()]; distancia = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY); } });
+svg.addEventListener('pointermove', (e) => {
+  if (!toques.has(e.pointerId)) return; toques.set(e.pointerId, e);
+  if (toques.size === 2) { const [a, b] = [...toques.values()], d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+    if (distancia) zoom(distancia / d, (a.clientX + b.clientX) / 2, (a.clientY + b.clientY) / 2); distancia = d; moveu = true; return; }
+  const p = paraSvg(e.clientX, e.clientY); vista.x -= p.x - ultimo.x; vista.y -= p.y - ultimo.y; if (Math.abs(p.x - ultimo.x) + Math.abs(p.y - ultimo.y) > .5) moveu = true; aplicar(); ultimo = paraSvg(e.clientX, e.clientY);
+});
+const soltar = (e) => { toques.delete(e.pointerId); distancia = 0; if (!toques.size) svg.classList.remove('arrastando'); else { const r = [...toques.values()][0]; ultimo = paraSvg(r.clientX, r.clientY); } };
+svg.addEventListener('pointerup', (e) => { soltar(e); if (!moveu && !e.target.closest('.pino')) fechar(); });
+svg.addEventListener('pointercancel', soltar);
+addEventListener('resize', aplicar);
+document.querySelectorAll('[data-zona]').forEach(b => b.onclick = () => irPara(b.dataset.zona));
+addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
+
+/* ---------- som ---------- */
+let ctx = null;
+function sino(f) { try { ctx ||= new (window.AudioContext || window.webkitAudioContext)(); const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime;
+  o.frequency.value = f; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.08, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + 1.2);
+  o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + 1.3); } catch (e) { /* sem áudio */ } }
+const NOTA_REINO = { almas: 196, aguas: 392, objetos: 1047, cidade: 1318, feras: 247, fogo: 523 };
+
+/* ---------- painel ---------- */
+const painel = $('painel');
+function mostrarDica(l, g) {
+  const r = g.getBoundingClientRect(), d = $('dica');
+  d.textContent = l.nome; d.style.setProperty('--c', INFO_REINOS[l.reino].cor);
+  d.style.left = r.left + r.width / 2 + 'px'; d.style.top = r.top + 'px'; d.hidden = false;
+}
+function abrir(l, g) {
+  pinos.forEach(p => p.g.classList.toggle('ativo', p.g === g));
+  const reino = INFO_REINOS[l.reino], arte = l.tem && officialArtFiles[l.id] ? `/casa/img/cartas/${officialArtFiles[l.id]}` : null;
+  const trecho = (l.historia || '').split('\n').filter(Boolean)[0] || '';
+  painel.style.setProperty('--c', reino.cor);
+  painel.innerHTML = `
+    <span class="olho">${esc(reino.nome.toUpperCase())} · Nº ${String(l.numero).padStart(3, '0')}</span>
+    <h2>${esc(l.nome)}</h2>
+    <p class="origem">${esc(l.origem)}</p>
+    ${arte ? `<div class="arte" style="background-image:url('${arte}')" role="img" aria-label="Carta de ${esc(l.nome)}"></div>` : ''}
+    <p>${l.tem ? esc(trecho.length > 260 ? trecho.slice(0, 257) + '…' : trecho) : 'Você ainda não tem esta carta. A história fica trancada até o baú entregá-la.'}</p>
+    <span class="olho">${l.tem ? '✶ CARTA NO SEU GRIMÓRIO' : '◌ CARTA AINDA NÃO COLETADA'}</span>
+    <div class="acoes">
+      ${l.tem ? '<a class="btn" href="/reino/index.html">VER NO REINO 3D</a>' : '<a class="btn" href="/ra.html">ABRIR O BAÚ (RA)</a>'}
+      <button type="button" class="btn" id="fechar">FECHAR</button>
+    </div>`;
+  painel.hidden = false; $('fechar').onclick = fechar;
+  sino(NOTA_REINO[l.reino]);
+}
+function fechar() { painel.hidden = true; pinos.forEach(p => p.g.classList.remove('ativo')); }
+
+/* ---------- filtros e resumo ---------- */
+const ligados = new Set(Object.keys(INFO_REINOS));
+Object.entries(INFO_REINOS).forEach(([id, r]) => {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'filtro'; b.setAttribute('aria-pressed', 'true'); b.style.setProperty('--c', r.cor);
+  const n = lendas.filter(l => l.reino === id), t = n.filter(l => l.tem).length;
+  b.innerHTML = `<i></i>${esc(r.nome.toUpperCase())} ${t}/${n.length}`;
+  b.onclick = () => { ligados.has(id) ? ligados.delete(id) : ligados.add(id); b.setAttribute('aria-pressed', String(ligados.has(id))); pinos.forEach(p => p.g.classList.toggle('oculto', !ligados.has(p.l.reino))); };
+  $('filtros').append(b);
+});
+$('resumo').innerHTML = logado ? `<b>${coletadas.size}</b> DE 60 CARTAS NO SEU GRIMÓRIO` : 'VISITANTE · <a href="/" style="color:inherit">ENTRE</a> PARA ACENDER AS SUAS CARTAS';
+
+irPara('mundo', false);
+window.__mapa = { total: pinos.length, coletadas: coletadas.size, abrir: (n) => { const p = pinos.find(p => p.l.numero === n); abrir(p.l, p.g); }, irPara };
+</script>
+</body>
+</html>

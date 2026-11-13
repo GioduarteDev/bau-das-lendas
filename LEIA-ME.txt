@@ -1,4 +1,4 @@
-﻿BAÚ DAS LENDAS
+BAÚ DAS LENDAS
 
 O backend e a integração autenticada foram implementados neste repositório.
 Guia completo e comandos Windows PowerShell: backend/README.md.
@@ -7,11 +7,36 @@ Guia completo e comandos Windows PowerShell: backend/README.md.
 - Coleção oficial salva no PostgreSQL; o Grimório consulta a API.
 - Sorteio no servidor somente ao tocar em ABRIR BAÚ, sem repetição.
 - QR 01: site, conta e álbum. QR 02: /ra.html. Nenhum QR por lenda.
-- RA: baú e animações Three.js preservados; o próprio QR 02 é lido por
-  jsQR, sem imagem-alvo extra. Estabilidade física no celular pendente.
+- RA: /ra.html reconhece o cartaz da casa (/cartaz.html) com MindAR.
+  Sem cartaz, /ra.html?rastreio=qr lê o QR 02 com jsQR.
+  Teste físico no celular (HTTPS) ainda pendente.
 - A câmera exige HTTPS no celular. Publique site e API com /api
   encaminhado ao backend na mesma origem.
 
 Backup anterior à implementação: backup/pre-backend-20261102/.
 Etapa visual: docs/VALIDACAO-VISUAL.md.
 Backup anterior à etapa visual: backup/pre-integracao-visual-20261102/.
+
+COMO RODAR
+1. Backend: cd backend → copie .env.example para .env → docker compose up
+   (sem Docker: veja backend/README.md).
+2. Frontend: na pasta principal → npm install → npm run dev
+   → abra http://localhost:5175
+
+PÁGINAS
+- /                    Arquivo (React): lendas, Grimório, conta, portais.
+- /casa/index.html     Casa 3D: jardim, porta e corredor das 60 lendas.
+- /casa/cartas.html    Cartas com os 3 flips (arte, verso, ficha).
+- /ra.html             Realidade aumentada (baú + carta em 3D).
+- /cartaz.html         Cartaz A4 para imprimir (alvo da RA).
+- /reino/index.html    Reino 3D: selo de 6 reinos x 10 lendas + Mesa do Ritual.
+- /quiz/index.html     Verdade ou Lenda? (10 perguntas por rodada).
+- /mapa/index.html     Mapa-múndi das 60 lendas, coloridas pelo reino.
+Reino, Quiz e Mapa leem a coleção do usuário logado pela API (/api/album).
+Os reinos de cada lenda ficam em public/reinos.js.
+
+TESTES
+- Backend: cd backend → python run_tests.py
+- Navegador (com backend e vite rodando):
+  node tests/integration-browser.mjs
+  node tests/paginas-extras-browser.mjs

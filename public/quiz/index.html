@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d0812">
+<title>Verdade ou Lenda?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  /* Verdade ou Lenda? — mesmo visual do Reino: noite roxa, cores vivas, letra gótica. */
+  :root {
+    --noite: #0d0812; --tinta: #f3e9da; --apagado: #a99cb3; --linha: #3a2c46;
+    --verdade: #6fe3c4; --lenda: #ff4f8b; --sangue: #9e0b1e; --ouro: #f2c14e;
+    --display: 'Grenze Gotisch', Georgia, serif; --texto: 'Newsreader', Georgia, serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { min-height: 100%; }
+  body { margin: 0; background: radial-gradient(120% 80% at 50% 0%, #2a1438 0%, var(--noite) 60%) fixed, var(--noite); color: var(--tinta); font-family: var(--texto); }
+  a { color: inherit; }
+  .topo { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; padding: calc(env(safe-area-inset-top, 0px) + 18px) max(16px, env(safe-area-inset-right, 0px)) 18px max(16px, env(safe-area-inset-left, 0px)); }
+  .marca { font: 700 28px/1 var(--display); text-decoration: none; }
+  .marca small { display: block; margin-top: 6px; font: 10px var(--mono); letter-spacing: .28em; color: var(--apagado); }
+  .atalhos { display: flex; flex-wrap: wrap; gap: 6px; }
+  .atalhos a, .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 14px; border: 1px solid var(--linha); background: rgba(13,8,18,.7); color: var(--tinta); font: 11px var(--mono); letter-spacing: .18em; text-decoration: none; cursor: pointer; }
+  .atalhos a:hover, .btn:hover { border-color: var(--verdade); color: var(--verdade); }
+  :focus-visible { outline: 2px solid var(--ouro); outline-offset: 3px; }
+  main { width: min(720px, 100% - 32px); margin: 0 auto; padding: 8px 0 64px; }
+  .placar { display: flex; justify-content: space-between; gap: 12px; font: 11px var(--mono); letter-spacing: .22em; color: var(--apagado); }
+  .barra { height: 4px; margin: 10px 0 28px; background: var(--linha); }
+  .barra i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--verdade), var(--lenda)); transition: width .4s; }
+  .carta { position: relative; overflow: hidden; padding: 28px; border: 1px solid var(--linha); background: rgba(20,12,28,.88); box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+  .carta::before { content: ''; position: absolute; inset: 0; border-top: 3px solid var(--cor, var(--ouro)); pointer-events: none; }
+  .cabeca { display: grid; grid-template-columns: 84px 1fr; gap: 18px; align-items: center; margin-bottom: 20px; }
+  .miniatura { width: 84px; aspect-ratio: 2 / 3; border: 1px solid var(--linha); background: #120a18 center / cover no-repeat; display: grid; place-items: center; font: 700 40px var(--display); color: var(--cor, var(--ouro)); }
+  .olho { font: 10px var(--mono); letter-spacing: .24em; color: var(--cor, var(--ouro)); }
+  .lenda-nome { margin: 6px 0 0; font: 700 30px/1.05 var(--display); }
+  .afirmacao { margin: 0 0 26px; font-size: clamp(22px, 4.2vw, 30px); line-height: 1.3; text-wrap: pretty; }
+  .escolhas { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .escolha { min-height: 64px; border: 2px solid var(--c); background: transparent; color: var(--c); font: 700 26px var(--display); letter-spacing: .04em; cursor: pointer; transition: background .2s, color .2s, transform .1s; }
+  .escolha:hover:not(:disabled) { background: var(--c); color: var(--noite); }
+  .escolha:active:not(:disabled) { transform: scale(.98); }
+  .escolha:disabled { cursor: default; opacity: .35; }
+  .escolha.marcada { opacity: 1; background: var(--c); color: var(--noite); }
+  .escolha small { display: block; font: 10px var(--mono); letter-spacing: .2em; }
+  .veredito { margin-top: 22px; padding: 18px; border-left: 3px solid var(--v); background: rgba(0,0,0,.3); }
+  .veredito[hidden] { display: none; }
+  .veredito b { display: block; margin-bottom: 6px; font: 700 26px var(--display); color: var(--v); }
+  .veredito p { margin: 0; font-size: 17px; line-height: 1.5; color: #d8cfe0; }
+  .proxima { margin-top: 16px; width: 100%; min-height: 52px; font-size: 12px; }
+  .fim { text-align: center; }
+  .fim h1 { margin: 8px 0; font: 700 clamp(44px, 9vw, 72px)/1 var(--display); }
+  .fim .nota { font: 700 96px/1 var(--display); color: var(--ouro); text-shadow: 0 0 30px rgba(242,193,78,.5); }
+  .fim p { font-size: 18px; color: #d8cfe0; }
+  .fim .acoes { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 22px; }
+  .aviso18 { margin-top: 26px; font: 10px var(--mono); letter-spacing: .2em; color: var(--apagado); text-align: center; }
+  /* sangue que escorre quando você erra */
+  .sangue { position: fixed; inset: 0 0 auto; height: 0; z-index: 10; pointer-events: none; }
+  .gota { position: absolute; top: 0; width: var(--w); height: 0; background: linear-gradient(var(--sangue), #5a0410); border-radius: 0 0 50% 50% / 0 0 18px 18px; animation: escorre var(--d) cubic-bezier(.3,.1,.4,1) forwards; }
+  @keyframes escorre { 0% { height: 0; opacity: 1; } 70% { opacity: 1; } 100% { height: var(--h); opacity: 0; } }
+  .tremor { animation: tremor .35s; }
+  @keyframes tremor { 25% { transform: translateX(-6px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-3px); } }
+  @media (prefers-reduced-motion: reduce) { .gota, .tremor { animation: none; } .barra i { transition: none; } }
+  @media (max-width: 520px) { .carta { padding: 20px; } .cabeca { grid-template-columns: 64px 1fr; } .miniatura { width: 64px; } .lenda-nome { font-size: 24px; } }
+</style>
+</head>
+<body>
+<header class="topo">
+  <a class="marca" href="/">Baú das Lendas<small>VERDADE OU LENDA?</small></a>
+  <nav class="atalhos" aria-label="Outras passagens">
+    <a href="/">ARQUIVO</a>
+    <a href="/reino/index.html">REINO 3D</a>
+    <a href="/mapa/index.html">MAPA</a>
+    <a href="/ra.html">RA</a>
+    <button type="button" class="btn" id="som" aria-pressed="false">LIGAR O SOM</button>
+  </nav>
+</header>
+
+<main id="jogo" aria-live="polite"></main>
+<div class="sangue" id="sangue" aria-hidden="true"></div>
+
+<script type="module">
+import { officialArtFiles } from '/card-art.js';
+import { INFO_REINOS, reinoDe } from '/reinos.js';
+
+// Cada afirmação é sobre uma lenda do catálogo (n = número da lenda).
+// VERDADE = aconteceu ou existe de fato. LENDA = só existe na história contada.
+const PERGUNTAS = [
+  { n: 12, v: true, a: 'Peter Stumpp foi um homem de verdade, julgado e executado em Bedburg, na Alemanha, em 1589.',
+    e: 'O processo existiu e foi divulgado em panfletos da época. A "pele de lobo" que o transformava é que pertence à lenda.' },
+  { n: 19, v: true, a: 'A Ilha das Bonecas existe: é um lugar real nos canais de Xochimilco, no México, coberto de bonecas penduradas.',
+    e: 'Don Julián Santana Barrera pendurou as bonecas por décadas. O lugar recebe visitantes até hoje.' },
+  { n: 38, v: false, a: 'Existem registros de fliperamas Polybius instalados em Portland em 1981.',
+    e: 'Nunca apareceu máquina, fotografia da época ou registro de fabricante. A história se espalhou pela internet por volta de 2000.' },
+  { n: 26, v: false, a: 'O rosto do "This Man" foi desenhado por milhares de pacientes que sonharam com o mesmo homem.',
+    e: 'O site foi criado em 2008 pelo italiano Andrea Natella como um experimento de marketing. Os relatos fazem parte da ficção.' },
+  { n: 37, v: true, a: 'O Slender Man nasceu em 2009, numa montagem de fotos postada em um fórum da internet.',
+    e: 'Ele foi criado por Eric Knudsen ("Victor Surge") num concurso de imagens paranormais do fórum Something Awful.' },
+  { n: 8, v: true, a: 'Kuldhara é uma vila real e abandonada perto de Jaisalmer, no Rajastão, na Índia.',
+    e: 'As ruínas existem e são visitadas por turistas. O que é lenda é a maldição.' },
+  { n: 8, v: false, a: 'Está comprovado que os moradores de Kuldhara sumiram numa única noite depois de lançar uma maldição.',
+    e: 'Nenhum registro confirma o êxodo em uma noite. A seca e os impostos estão entre as explicações mais citadas.' },
+  { n: 56, v: true, a: 'A Annabelle verdadeira não é de porcelana: é uma boneca de pano do modelo Raggedy Ann.',
+    e: 'A boneca de porcelana é a dos filmes. A original, de pano, ficava no museu do casal Warren, em Connecticut.' },
+  { n: 24, v: true, a: 'Em 1985 o jornal britânico The Sun publicou histórias de casas incendiadas onde só o quadro do menino chorando sobrava.',
+    e: 'A série de reportagens começou a lenda e terminou com leitores mandando os quadros para uma fogueira.' },
+  { n: 24, v: false, a: 'O quadro do menino chorando provoca incêndios.',
+    e: 'Os quadros eram impressos em placas resistentes ao fogo e presos com barbante, que queimava primeiro. Por isso caíam virados para o chão e se salvavam.' },
+  { n: 6, v: false, a: 'A Hachishakusama vem de um conto tradicional do período Edo.',
+    e: 'A história foi publicada num fórum japonês da internet em 2008. É uma lenda bem moderna.' },
+  { n: 5, v: true, a: 'A Kisaragi Station surgiu de posts feitos "em tempo real" num fórum japonês em 2004.',
+    e: 'Uma usuária chamada Hasumi contou no 2channel que estava presa numa estação que não existia nos mapas.' },
+  { n: 10, v: true, a: 'A história do Flautista de Hamelin se apoia num registro antigo da cidade sobre 130 crianças que partiram em 1284.',
+    e: 'Um vitral e anotações medievais de Hamelin falam da partida das crianças. Ninguém sabe o que aconteceu de fato.' },
+  { n: 17, v: true, a: 'Ana Jansen foi uma mulher real, rica e poderosa de São Luís do Maranhão no século XIX.',
+    e: 'Ela foi uma das figuras mais influentes da política e dos negócios da cidade.' },
+  { n: 17, v: false, a: 'A carruagem de Ana Jansen, puxada por cavalos sem cabeça, já foi fotografada nas ruas de São Luís.',
+    e: 'Não existe nenhuma foto. A carruagem fantasma vive na tradição oral da cidade.' },
+  { n: 55, v: true, a: 'O Boitatá já aparece numa carta escrita pelo padre José de Anchieta em 1560.',
+    e: 'Anchieta descreveu os "baetatá", fachos de fogo que atacavam os indígenas. É um dos registros mais antigos do folclore brasileiro.' },
+  { n: 3, v: false, a: 'Kiyohime virou serpente e queimou o monge Anchin dentro do sino do templo Dōjōji.',
+    e: 'É a tradição do templo, contada há séculos no teatro japonês. O templo existe, a serpente não.' },
+  { n: 33, v: true, a: 'Em 1996 moradores de Varginha (MG) relataram ter visto uma criatura estranha.',
+    e: 'Os relatos aconteceram e viraram um dos casos de ufologia mais famosos do Brasil.' },
+  { n: 33, v: false, a: 'O Exército brasileiro confirmou oficialmente que capturou um extraterrestre em Varginha.',
+    e: 'A investigação militar concluiu que as testemunhas viram um morador da cidade. Nenhum órgão oficial confirmou o ET.' },
+  { n: 9, v: true, a: 'Nas Filipinas, tradições antigas explicavam os eclipses como uma serpente gigante engolindo a lua.',
+    e: 'É a Bakunawa. Durante os eclipses, as pessoas batiam panelas para assustá-la e fazê-la devolver a lua.' },
+  { n: 25, v: false, a: 'A polícia polonesa confirmou que o Black Volga sequestrava crianças.',
+    e: 'O carro preto é lenda urbana do bloco soviético. Nunca houve caso confirmado.' },
+  { n: 48, v: true, a: 'O Silverpilen existiu: era um trem de metrô prateado e sem pintura que rodou em Estocolmo.',
+    e: 'Era uma pequena série de vagões de alumínio que sobrou sem pintura. Como raramente aparecia nas linhas, virou a lenda do trem fantasma.' },
+  { n: 53, v: true, a: 'As Sereias que tentam atrair Odisseu aparecem na Odisseia, de Homero.',
+    e: 'Odisseu tapa os ouvidos dos marinheiros com cera e pede para ser amarrado ao mastro para ouvir o canto.' },
+  { n: 15, v: true, a: 'Barba Azul foi publicado por Charles Perrault em 1697.',
+    e: 'O conto saiu na coletânea "Contos da Mamãe Gansa".' },
+  { n: 7, v: false, a: 'As lágrimas de Meng Jiangnü derrubaram um trecho da Grande Muralha da China.',
+    e: 'É uma das quatro grandes lendas populares da China, contada há mais de mil anos. Não existe registro histórico do desabamento.' },
+  { n: 14, v: false, a: 'O Holandês Voador está registrado como um navio real, com capitão e data de naufrágio.',
+    e: 'Nenhum registro confirma o navio. A lenda ganhou força entre marinheiros no século XVIII, perto do Cabo da Boa Esperança.' },
+];
+const POR_RODADA = 10;
+const $ = (id) => document.getElementById(id);
+const jogo = $('jogo');
+
+const catalogo = await fetch('/lendas-ra.json').then(r => r.json());
+const porNumero = Object.fromEntries(catalogo.map(l => [l.numero, l]));
+
+/* ---------- som sintetizado ---------- */
+let ctx = null, ligado = false;
+function tom(f, dur, tipo = 'sine', vol = .15, glide) {
+  if (!ligado) return;
+  try {
+    ctx ||= new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime;
+    o.type = tipo; o.frequency.setValueAtTime(f, t); if (glide) o.frequency.exponentialRampToValueAtTime(glide, t + dur);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + dur + .05);
+  } catch (e) { /* sem áudio */ }
+}
+const somAcerto = () => { tom(523, .5, 'sine', .12); setTimeout(() => tom(784, .7, 'sine', .1), 120); };
+const somErro = () => { tom(110, .9, 'sawtooth', .1, 55); tom(116, .9, 'sawtooth', .08, 58); };
+$('som').onclick = () => {
+  ligado = !ligado; ctx?.resume?.();
+  $('som').setAttribute('aria-pressed', String(ligado)); $('som').textContent = ligado ? 'DESLIGAR O SOM' : 'LIGAR O SOM';
+  if (ligado) tom(330, .4, 'triangle', .08);
+};
+
+/* ---------- efeitos ---------- */
+const reduzido = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function sangrar() {
+  if (reduzido) return;
+  const s = $('sangue');
+  for (let i = 0; i < 14; i++) {
+    const g = document.createElement('i'); g.className = 'gota';
+    g.style.left = Math.random() * 100 + '%';
+    g.style.setProperty('--w', 6 + Math.random() * 16 + 'px');
+    g.style.setProperty('--h', 20 + Math.random() * 60 + 'vh');
+    g.style.setProperty('--d', 1.2 + Math.random() * 1.6 + 's');
+    s.append(g); setTimeout(() => g.remove(), 3200);
+  }
+}
+const embaralhar = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+const lerRecorde = () => { try { return +localStorage.getItem('bau-quiz-recorde') || 0; } catch (e) { return 0; } };
+const salvarRecorde = (v) => { try { localStorage.setItem('bau-quiz-recorde', String(v)); } catch (e) { /* ok */ } };
+const esc = (t) => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* ---------- rodada ---------- */
+let rodada = [], atual = 0, acertos = 0;
+function comecar() {
+  rodada = embaralhar(PERGUNTAS).slice(0, POR_RODADA); atual = 0; acertos = 0; mostrar();
+}
+function mostrar() {
+  const q = rodada[atual], lenda = porNumero[q.n], reino = INFO_REINOS[reinoDe(q.n)];
+  const arte = officialArtFiles[lenda.id] ? `/casa/img/cartas/${officialArtFiles[lenda.id]}` : null;
+  jogo.innerHTML = `
+    <div class="placar"><span>PERGUNTA ${atual + 1} DE ${POR_RODADA}</span><span>${acertos} ACERTO${acertos === 1 ? '' : 'S'}</span></div>
+    <div class="barra"><i style="width:${atual / POR_RODADA * 100}%"></i></div>
+    <article class="carta" id="carta" style="--cor:${reino.cor}">
+      <div class="cabeca">
+        <div class="miniatura" ${arte ? `style="background-image:url('${arte}')"` : ''} aria-hidden="true">${arte ? '' : '?'}</div>
+        <div><span class="olho">${esc(reino.nome.toUpperCase())} · Nº ${String(q.n).padStart(3, '0')}</span><h2 class="lenda-nome">${esc(lenda.nome)}</h2></div>
+      </div>
+      <p class="afirmacao">${esc(q.a)}</p>
+      <div class="escolhas">
+        <button type="button" class="escolha" style="--c:var(--verdade)" data-v="1">Verdade<small>ACONTECEU</small></button>
+        <button type="button" class="escolha" style="--c:var(--lenda)" data-v="0">Lenda<small>SÓ NA HISTÓRIA</small></button>
+      </div>
+      <div class="veredito" id="veredito" hidden></div>
+    </article>`;
+  jogo.querySelectorAll('.escolha').forEach(b => b.onclick = () => responder(b));
+  jogo.querySelector('.escolha').focus({ preventScroll: true });
+}
+function responder(botao) {
+  const q = rodada[atual], escolheu = botao.dataset.v === '1', certo = escolheu === q.v;
+  jogo.querySelectorAll('.escolha').forEach(b => { b.disabled = true; });
+  botao.classList.add('marcada');
+  if (certo) { acertos++; somAcerto(); } else { somErro(); sangrar(); $('carta').classList.add('tremor'); }
+  jogo.querySelector('.placar span:last-child').textContent = `${acertos} ACERTO${acertos === 1 ? '' : 'S'}`;
+  const v = $('veredito');
+  v.style.setProperty('--v', certo ? 'var(--verdade)' : 'var(--lenda)');
+  v.innerHTML = `<b>${certo ? 'Você acertou.' : 'Errou.'} É ${q.v ? 'verdade' : 'lenda'}.</b><p>${esc(q.e)}</p>
+    <button type="button" class="btn proxima" id="proxima">${atual + 1 < POR_RODADA ? 'PRÓXIMA PERGUNTA' : 'VER O RESULTADO'}</button>`;
+  v.hidden = false;
+  $('proxima').onclick = () => { atual++; atual < POR_RODADA ? mostrar() : fim(); };
+  $('proxima').focus({ preventScroll: true });
+  v.scrollIntoView({ block: 'nearest', behavior: reduzido ? 'auto' : 'smooth' });
+}
+function fim() {
+  const recorde = Math.max(lerRecorde(), acertos); salvarRecorde(recorde);
+  const titulo = acertos >= 9 ? 'Guardião do Baú' : acertos >= 7 ? 'Caçador de Lendas' : acertos >= 4 ? 'Aprendiz do Arquivo' : 'Alma Desavisada';
+  jogo.innerHTML = `
+    <section class="carta fim" style="--cor:var(--ouro)">
+      <span class="olho">FIM DA RODADA</span>
+      <div class="nota">${acertos}/${POR_RODADA}</div>
+      <h1>${titulo}</h1>
+      <p>${acertos >= 7 ? 'Você separa o que aconteceu do que só se conta no escuro.' : 'As lendas enganaram você desta vez. Elas são boas nisso.'}</p>
+      <p style="font:11px var(--mono);letter-spacing:.2em;color:var(--apagado)">SEU RECORDE: ${recorde}/${POR_RODADA}</p>
+      <div class="acoes">
+        <button type="button" class="btn" id="denovo">JOGAR DE NOVO</button>
+        <a class="btn" href="/reino/index.html">IR AO REINO 3D</a>
+        <a class="btn" href="/mapa/index.html">VER O MAPA</a>
+      </div>
+    </section>`;
+  $('denovo').onclick = comecar; $('denovo').focus();
+}
+function abertura() {
+  jogo.innerHTML = `
+    <section class="carta fim" style="--cor:var(--lenda)">
+      <span class="olho">${PERGUNTAS.length} AFIRMAÇÕES · ${POR_RODADA} POR RODADA</span>
+      <h1>Verdade ou Lenda?</h1>
+      <p>Cada lenda do baú tem um pedaço que aconteceu de verdade e um pedaço que só existe na história. Leia a afirmação e decida.</p>
+      ${lerRecorde() ? `<p style="font:11px var(--mono);letter-spacing:.2em;color:var(--apagado)">SEU RECORDE: ${lerRecorde()}/${POR_RODADA}</p>` : ''}
+      <div class="acoes"><button type="button" class="btn" id="comecar" style="min-height:52px;padding:0 28px">COMEÇAR</button></div>
+    </section>
+    <p class="aviso18">CONTEÚDO PARA MAIORES DE 18 ANOS · CONTÉM SANGUE</p>`;
+  $('comecar').onclick = comecar;
+}
+abertura();
+window.__quiz = { perguntas: PERGUNTAS.length, comecar, responder: (v) => responder(jogo.querySelector(`.escolha[data-v="${v ? 1 : 0}"]`)), proxima: () => $('proxima')?.click() };
+</script>
+</body>
+</html>

@@ -420,6 +420,18 @@ export default function App() {
             Cartas
           </a>
 
+          <a href="/reino/index.html">
+            Reino 3D
+          </a>
+
+          <a href="/quiz/index.html">
+            Quiz
+          </a>
+
+          <a href="/mapa/index.html">
+            Mapa
+          </a>
+
           <button
             type="button"
             aria-current={painel === 'portais' ? 'page' : undefined}
